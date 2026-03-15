@@ -1,3 +1,8 @@
+---
+config:
+  theme: redux-dark-color
+---
+
 ```mermaid
 erDiagram
     users {
