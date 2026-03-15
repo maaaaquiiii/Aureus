@@ -1,96 +1,70 @@
-```mermeid
-
+```mermaid
 erDiagram
-
     users {
-
         BIGSERIAL id PK
-
-        VARCHAR_255 email "NOT NULL UNIQUE"
-
-        VARCHAR_255 name "NOT NULL"
-
-        VARCHAR_3 currency "DEFAULT EUR"
-
+        VARCHAR email "NOT NULL UNIQUE"
+        VARCHAR name "NOT NULL"
+        VARCHAR currency "DEFAULT EUR"
         TIMESTAMP created_at "NOT NULL"
+    }
 
+    categories {
+        BIGSERIAL id PK
+        VARCHAR name "NOT NULL UNIQUE"
+        VARCHAR icon
+        VARCHAR color
     }
 
     import_jobs {
-
         BIGSERIAL id PK
-
         BIGINT user_id FK
-
-        VARCHAR_100 source "NOT NULL"
-
-        VARCHAR_20 status "DEFAULT PENDING"
-
-        VARCHAR_255 file_name
-
+        VARCHAR source "NOT NULL"
+        VARCHAR status "DEFAULT PENDING"
+        VARCHAR file_name
         INT total_rows
-
         INT imported_rows
-
         TEXT error_detail
-
         TIMESTAMP created_at "NOT NULL"
-
         TIMESTAMP finished_at
-
     }
 
     expenses {
-
         BIGSERIAL id PK
-
         BIGINT user_id FK
-
         BIGINT import_job_id FK
-
-        VARCHAR_100 category "NOT NULL"
-
-        DECIMAL_12_2 amount "NOT NULL"
-
-        VARCHAR_3 currency "NOT NULL"
-
-        VARCHAR_500 description
-
+        BIGINT category_id FK
+        DECIMAL amount "NOT NULL"
+        VARCHAR currency "NOT NULL"
+        VARCHAR description
         DATE incurred_on "NOT NULL"
-
-        VARCHAR_100 source
-
+        VARCHAR source
         TIMESTAMP created_at "NOT NULL"
+    }
 
+    budgets {
+        BIGSERIAL id PK
+        BIGINT user_id FK
+        BIGINT category_id FK
+        VARCHAR period "NOT NULL"
+        DECIMAL limit_amount "NOT NULL"
     }
 
     llm_analyses {
-
         BIGSERIAL id PK
-
         BIGINT user_id FK
-
-        VARCHAR_7 period "NOT NULL ej:2025-03"
-
+        VARCHAR period "NOT NULL"
         TEXT prompt_used "NOT NULL"
-
         TEXT analysis "NOT NULL"
-
-        VARCHAR_50 model_used "NOT NULL"
-
+        VARCHAR model_used "NOT NULL"
         INT tokens_used
-
         TIMESTAMP created_at "NOT NULL"
-
     }
 
     users ||--o{ import_jobs : "tiene"
-
     users ||--o{ expenses : "tiene"
-
+    users ||--o{ budgets : "define"
     users ||--o{ llm_analyses : "tiene"
-
     import_jobs ||--o{ expenses : "genera"
-
+    categories ||--o{ expenses : "clasifica"
+    categories ||--o{ budgets : "limita"
 ```
-
