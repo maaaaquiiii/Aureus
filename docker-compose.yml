@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: aureus-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aureus
+      POSTGRES_USER: aureus
+      POSTGRES_PASSWORD: aureus
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # backend:
+  #   build: .
+  #   container_name: aureus-backend
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/aureus
+  #     SPRING_DATASOURCE_USERNAME: aureus
+  #     SPRING_DATASOURCE_PASSWORD: aureus
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - db
+
+  # frontend:
+  #   build: ./frontend
+  #   container_name: aureus-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  postgres-data:
