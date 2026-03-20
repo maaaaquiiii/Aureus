@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "import_jobs")
 public class ImportJob {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

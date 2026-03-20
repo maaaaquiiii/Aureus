@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "llm_analyses",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "period"}))
+@Table(name = "llm_analyses", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "period"}))
 public class LlmAnalysis {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
