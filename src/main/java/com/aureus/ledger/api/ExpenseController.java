@@ -24,10 +24,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/users/{userId}/monthly")
-    public List<ExpenseResponse> getMonthlyExpenses(
-            @PathVariable Long userId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month
-    ) {
+    public List<ExpenseResponse> getMonthlyExpenses(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
         return expenseService.findMonthlyExpenses(userId, month);
     }
 }

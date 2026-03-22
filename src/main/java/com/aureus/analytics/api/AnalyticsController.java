@@ -3,7 +3,6 @@ package com.aureus.analytics.api;
 import com.aureus.analytics.service.AnalyticsService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.YearMonth;
 import java.util.List;
 

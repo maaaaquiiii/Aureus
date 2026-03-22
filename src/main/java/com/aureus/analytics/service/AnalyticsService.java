@@ -8,7 +8,6 @@ import com.aureus.ledger.domain.Expense;
 import com.aureus.ledger.domain.ExpenseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.YearMonth;

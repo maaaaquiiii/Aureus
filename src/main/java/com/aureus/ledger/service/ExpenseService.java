@@ -5,7 +5,6 @@ import com.aureus.ledger.api.ExpenseResponse;
 import com.aureus.ledger.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.YearMonth;
 import java.util.List;
 
@@ -15,9 +14,7 @@ public class ExpenseService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository,
-                          UserRepository userRepository,
-                          CategoryRepository categoryRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.expenseRepository = expenseRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
