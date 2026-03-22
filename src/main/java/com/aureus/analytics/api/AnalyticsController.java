@@ -22,10 +22,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/users/{userId}/evolution")
-    public List<MonthlyEvolution> getEvolution(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "12") int months
-    ) {
+    public List<MonthlyEvolution> getEvolution(@PathVariable Long userId, @RequestParam(defaultValue = "12") int months) {
         return analyticsService.calculateEvolution(userId, months);
     }
 }
