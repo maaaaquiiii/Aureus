@@ -5,6 +5,7 @@ import type {
     MonthlyEvolution,
     Budget,
     ImportResponse,
+    Category,
 } from "./types";
 
 const USER_ID = 1; // TODO: hardcoded until login is implemented
@@ -82,5 +83,12 @@ export const importCsv = async (
         csvContent,
         fileName,
     });
+    return data;
+};
+
+// Categories
+
+export const getCategories = async (): Promise<Category[]> => {
+    const { data } = await client.get("/categories");
     return data;
 };
