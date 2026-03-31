@@ -2,7 +2,7 @@
     font-family: var(--font-body);
 }
 
-/* ── page header */
+/* page header */
 
 .pageHeader {
     display: flex;
@@ -13,7 +13,7 @@
 
 .pageTitle {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 500;
     color: var(--color-text);
     margin: 0;
@@ -21,7 +21,7 @@
 }
 
 .pageSubtitle {
-    font-size: 0.8125rem;
+    font-size: 1.5rem;
     color: var(--color-text-muted);
     margin: 0.25rem 0 0;
     font-weight: 300;
@@ -33,7 +33,7 @@
     gap: 0.75rem;
 }
 
-/* ── period picker */
+/* period picker */
 
 .periodPicker {
     display: flex;
@@ -42,7 +42,7 @@
 }
 
 .periodLabel {
-    font-size: 0.875rem;
+    font-size: 1rem;
     color: var(--color-text-secondary);
     min-width: 130px;
     text-align: center;
@@ -75,31 +75,32 @@
     cursor: not-allowed;
 }
 
-/* ── primary button */
+/* primary button */
 
 .btnPrimary {
-    padding: 0.5rem 1rem;
-    background: var(--color-accent);
-    color: var(--color-bg);
-    border: none;
+    padding: 0.5rem 1.25rem;
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 400;
     cursor: pointer;
     font-family: var(--font-body);
-    transition: opacity 0.15s;
+    letter-spacing: 0.05em;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 .btnPrimary:hover:not(:disabled) {
-    opacity: 0.85;
+    border-color: var(--color-text-secondary);
 }
 
 .btnPrimary:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* ── error */
+/* error */
 
 .error {
     border: 1px solid var(--color-danger);
@@ -107,11 +108,11 @@
     color: var(--color-danger);
     border-radius: var(--radius-md);
     padding: 0.75rem 1rem;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     margin-bottom: 1.5rem;
 }
 
-/* ── list */
+/* list */
 
 .list {
     display: flex;
@@ -119,7 +120,7 @@
     gap: 0.75rem;
 }
 
-/* ── budget row */
+/* budget row */
 
 .budgetRow {
     background: var(--color-surface);
@@ -150,14 +151,14 @@
 }
 
 .budgetCategory {
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--color-text);
     margin: 0;
 }
 
 .budgetPeriod {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--color-text-muted);
     margin: 0.2rem 0 0;
     font-weight: 300;
@@ -190,7 +191,7 @@
 }
 
 .btnSecondary {
-    font-size: 0.75rem;
+     font-size: 1rem;: 0.75rem;
     padding: 0.375rem 0.75rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -207,7 +208,7 @@
 }
 
 .btnDanger {
-    font-size: 0.75rem;
+     font-size: 1rem;: 0.75rem;
     padding: 0.375rem 0.75rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -223,7 +224,7 @@
     color: var(--color-danger);
 }
 
-/* ── empty state */
+/* empty state */
 
 .emptyState {
     border: 1px dashed var(--color-border);
@@ -233,21 +234,21 @@
 }
 
 .emptyTitle {
-    font-size: 0.875rem;
+     font-size: 1rem;: 0.875rem;
     color: var(--color-text-muted);
     margin: 0;
     font-weight: 300;
 }
 
 .emptySub {
-    font-size: 0.75rem;
+     font-size: 1rem;: 0.75rem;
     color: var(--color-text-muted);
     margin: 0.5rem 0 0;
     font-weight: 300;
     opacity: 0.6;
 }
 
-/* ── skeleton */
+/* skeleton */
 
 .skeleton {
     background: var(--color-border-soft);
@@ -255,7 +256,7 @@
     animation: pulse 1.5s ease infinite;
 }
 
-/* ── modal */
+/* modal */
 
 .overlay {
     position: fixed;
@@ -288,7 +289,7 @@
 
 .modalTitle {
     font-family: var(--font-display);
-    font-size: 1.125rem;
+     font-size: 1rem;: 1.125rem;
     font-weight: 500;
     color: var(--color-text);
     margin: 0;
@@ -300,7 +301,7 @@
     border: none;
     color: var(--color-text-muted);
     cursor: pointer;
-    font-size: 1.125rem;
+     font-size: 1rem;: 1.125rem;
     line-height: 1;
     padding: 0.25rem;
     transition: color 0.15s;
@@ -316,7 +317,7 @@
     color: var(--color-danger);
     border-radius: var(--radius-sm);
     padding: 0.625rem 0.875rem;
-    font-size: 0.75rem;
+     font-size: 1rem;: 0.75rem;
     margin-bottom: 1.25rem;
 }
 
@@ -328,7 +329,7 @@
 
 .fieldLabel {
     display: block;
-    font-size: 0.6875rem;
+     font-size: 1rem;: 0.6875rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--color-text-secondary);
@@ -343,7 +344,7 @@
     background: var(--color-bg);
     color: var(--color-text);
     padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+     font-size: 1rem;: 1rem;
     font-family: var(--font-body);
     font-weight: 400;
     outline: none;
@@ -370,7 +371,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text-secondary);
-    font-size: 0.8125rem;
+     font-size: 1rem;: 1rem;
     cursor: pointer;
     font-family: var(--font-body);
     transition: border-color 0.15s, color 0.15s;
@@ -387,7 +388,7 @@
     border: none;
     border-radius: var(--radius-sm);
     color: #fff;
-    font-size: 0.8125rem;
+     font-size: 1rem;: 1rem;
     font-weight: 600;
     cursor: pointer;
     font-family: var(--font-body);
@@ -399,7 +400,7 @@
     cursor: not-allowed;
 }
 
-/* ── animations */
+/* animations */
 
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(6px); }

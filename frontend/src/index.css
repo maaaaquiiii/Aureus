@@ -1,5 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
+/* modo oscuro (por defecto) */
+:root {
+    --font-body:    'Poiret One', sans-serif;
+    --font-display: 'Outfit', sans-serif;
+    --font-logo:    'Red Hat Display', sans-serif;
+
+    --color-bg:             #0D1321;
+    --color-surface:        #1D2D44;
+    --color-surface-2:      #162236;
+    --color-border:         #243650;
+    --color-border-soft:    #1A2940;
+
+    --color-text:           #F2F6FA;
+    --color-text-secondary: #cfe0ef;
+    --color-text-muted: #b5d2ee;
+    --color-section-title: #92b5d7;
+
+    /* el dorado solo para el logo */
+    --color-logo:           #C9A96E;
+
+    /* acento neutro para cifras, hover y gráficas */
+    --color-accent:         #EEF2F7;
+    --color-accent-soft:    #EEF2F710;
+
+    --color-danger:         #E07878;
+    --color-danger-bg:      #1E1018;
+    --color-section-title:  #526478;
+    --color-success:        #6AB898;
+    --color-success-bg:     #0E1E18;
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 18px;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* ── modo claro ──────────────────────────────────────────── */
+:root.light {
+    --color-bg:             #F8F7F4;
+    --color-surface:        #FFFFFF;
+    --color-surface-2:      #F4F1EA;
+    --color-border:         #E6DAC8;
+    --color-border-soft:    #EDE8DF;
+
+    --color-text:           #1A1612;
+    --color-text-secondary: #6B5C4E;
+    --color-text-muted:     #A89080;
+
+    --color-logo:           #A48D78;
+    --color-accent:         #1A1612;
+    --color-accent-soft:    #1A161210;
+
+    --color-danger:         #B05050;
+    --color-danger-bg:      #FDF4F0;
+    --color-section-title:  #A89080;
+    --color-success:        #5A8A6A;
+    --color-success-bg:     #F0F7F2;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* reset */
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +76,18 @@
 }
 
 body {
-    background: #0f0f1a;
+    background: var(--color-bg);
     min-height: 100vh;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s, color 0.3s;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 400;
 }
 
 #root {

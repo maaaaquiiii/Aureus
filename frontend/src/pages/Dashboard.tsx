@@ -7,7 +7,7 @@ import { getMonthlySummary, getMonthlyExpenses, getEvolution } from "../api/serv
 import type { MonthlySummary, Expense, MonthlyEvolution, CategorySummary } from "../api/types";
 import styles from "./Dashboard.module.css";
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
+// helpers
 
 function currentMonth(): string {
     const d = new Date();
@@ -28,7 +28,7 @@ function fullMonthLabel(month: string): string {
     return new Date(Number(y), Number(m) - 1).toLocaleDateString("es-ES", { month: "long", year: "numeric" });
 }
 
-// ─── tooltip ──────────────────────────────────────────────────────────────────
+// tooltip
 
 interface TooltipProps {
     active?: boolean;
@@ -52,7 +52,7 @@ function EvolutionTooltip({ active, payload, label }: TooltipProps) {
     );
 }
 
-// ─── category row ─────────────────────────────────────────────────────────────
+// category row
 
 function CategoryRow({ cat, max }: { cat: CategorySummary; max: number }) {
     const pct = max > 0 ? (cat.spent / max) * 100 : 0;
@@ -69,7 +69,7 @@ function CategoryRow({ cat, max }: { cat: CategorySummary; max: number }) {
     );
 }
 
-// ─── main ─────────────────────────────────────────────────────────────────────
+// main
 
 const PAGE_SIZE = 8;
 
@@ -129,7 +129,7 @@ export default function Dashboard() {
     return (
         <div className={styles.page}>
 
-            {/* ── header */}
+            {/* header */}
             <div className={styles.pageHeader}>
                 <div>
                     <h1 className={styles.pageTitle}>Dashboard</h1>
@@ -142,17 +142,17 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* ── error */}
+            {/* error */}
             {error && <div className={styles.error}>{error}</div>}
 
-            {/* ── kpi skeleton */}
+            {/* kpi skeleton */}
             {loading && (
                 <div className={styles.kpiGrid}>
                     {[0,1,2,3].map(i => <div key={i} className={styles.skeleton} style={{ height: 104 }} />)}
                 </div>
             )}
 
-            {/* ── kpi cards */}
+            {/* kpi cards */}
             {!loading && summary && (
                 <div className={styles.kpiGrid}>
                     <div className={styles.kpiCard} style={{ animationDelay: "0ms" }}>
@@ -186,7 +186,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* ── charts */}
+            {/* charts */}
             {!loading && (
                 <div className={styles.chartsRow}>
                     <div className={styles.card}>
@@ -201,7 +201,7 @@ export default function Dashboard() {
                                         tickLine={false}
                                     />
                                     <YAxis hide />
-                                    <Tooltip content={<EvolutionTooltip />} cursor={{ fill: "var(--color-border-soft)" }} />
+                                    <Tooltip content={<EvolutionTooltip />} cursor={false} />
                                     <Bar dataKey="totalSpent" fill="var(--color-accent)" radius={[3, 3, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -234,7 +234,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* ── table */}
+            {/* table */}
             {!loading && expenses.length > 0 && (
                 <div className={styles.tableCard}>
                     <div className={styles.tableHeader}>
@@ -280,7 +280,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* ── empty */}
+            {/* empty */}
             {!loading && !error && expenses.length === 0 && (
                 <div className={styles.emptyState}>
                     <p className={styles.emptyTitle}>No hay gastos para este mes.</p>

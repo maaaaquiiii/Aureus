@@ -1,35 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import styles from "./Layout.module.css";
 
 const navItems = [
-    { to: "/dashboard", label: "Dashboard"    },
+    { to: "/dashboard", label: "Dashboard" },
     { to: "/import",    label: "Importar CSV" },
-    { to: "/analysis",  label: "Análisis"     },
+    { to: "/analysis",  label: "Análisis" },
     { to: "/budgets",   label: "Presupuestos" },
 ];
 
-function applyTheme(isLight: boolean) {
-    const html = document.documentElement;
-    if (isLight) {
-        html.classList.add("light");
-        html.classList.remove("dark");
-    } else {
-        html.classList.remove("light");
-        html.classList.remove("dark");
-    }
-}
-
 export default function Layout() {
     const [isLight, setIsLight] = useState<boolean>(() => {
-        // Aplicar síncronamente en la inicialización
-        const saved = localStorage.getItem("theme") === "light";
-        applyTheme(saved);
-        return saved;
+        return localStorage.getItem("theme") === "light";
     });
 
     useEffect(() => {
-        applyTheme(isLight);
+        const html = document.documentElement;
+        if (isLight) {
+            html.classList.add("light");
+        } else {
+            html.classList.remove("light");
+        }
         localStorage.setItem("theme", isLight ? "light" : "dark");
     }, [isLight]);
 
@@ -58,7 +49,7 @@ export default function Layout() {
                         title={isLight ? "Modo oscuro" : "Modo claro"}
                         aria-label="Cambiar tema"
                     >
-                        {isLight ? "☽" : "☀"}
+                        {isLight ? "○" : "●"}
                     </button>
                 </nav>
             </header>

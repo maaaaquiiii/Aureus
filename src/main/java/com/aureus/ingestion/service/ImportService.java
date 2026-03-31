@@ -32,7 +32,7 @@ public class ImportService {
     public ImportResponse importCsv(ImportRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new RuntimeException("User not found: " + request.userId()));
-
+        checkDuplicate(request.userId(), request.fileName());
         // Create the import job with a PROCESSING status
         ImportJob job = new ImportJob();
         job.setUser(user);
@@ -76,5 +76,20 @@ public class ImportService {
                     e.getMessage()
             );
         }
+    }
+
+    @Transactional(readOnly = true)
+    private void checkDuplicate(Long userId, String fileName) {
+        importJobRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .filter(job -> "DONE".equals(job.getStatus()))
+                .filter(job -> fileName.equals(job.getFileName()))
+                .findFirst()
+                .ifPresent(job -> {
+                    throw new RuntimeException(
+                            "El archivo '" + fileName + "' ya fue importado el " +
+                                    job.getCreatedAt().toLocalDate()
+                    );
+                });
     }
 }

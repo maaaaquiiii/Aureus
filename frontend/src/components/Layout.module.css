@@ -1,134 +1,88 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
-
-/* ── dark theme (default) */
-:root {
-    --color-bg:             #0a0c12;
-    --color-surface:        #12151f;
-    --color-border:         #2a2d40;
-    --color-border-soft:    #1a1d2a;
-    --color-accent:         #7eb8e8;
-    --color-accent-light:   #a8d0f5;
-    --color-accent-muted:   #0e1a2a;
-    --color-text:           #f0f2f8;
-    --color-text-secondary: #c8cfe0;
-    --color-text-muted:     #8890a8;
-    --color-section-title:  #e0e4f0;
-    --color-danger:         #f87171;
-    --color-danger-bg:      #1c1015;
-    --radius-sm:            6px;
-    --radius-md:            10px;
-    --radius-lg:            14px;
-    --radius-xl:            18px;
-    --font-display:         'Playfair Display', Georgia, serif;
-    --font-body:            'Inter', system-ui, sans-serif;
-}
-
-/* ── light theme */
-html.light {
-    --color-bg:             #f2f1ed;
-    --color-surface:        #ffffff;
-    --color-border:         #c4c9d4;
-    --color-border-soft:    #dddbd6;
-    --color-accent:         #1a3050;
-    --color-accent-light:   #264d80;
-    --color-accent-muted:   #d0e2f5;
-    --color-text:           #06090f;
-    --color-text-secondary: #252d3d;
-    --color-text-muted:     #505868;
-    --color-section-title:  #1a2030;
-    --color-danger:         #c81e1e;
-    --color-danger-bg:      #fef2f2;
-}
-
-/* ── layout */
-
 .root {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     background: var(--color-bg);
-    color: var(--color-text);
-    font-family: var(--font-body);
-    font-weight: 300;
-    transition: background 0.25s ease, color 0.25s ease;
+    transition: background 0.3s, color 0.3s;
 }
 
 .header {
     background: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
     position: sticky;
     top: 0;
     z-index: 10;
-    transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .nav {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    height: 60px;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    padding: 0 32px;
+    height: 56px;
+    gap: 8px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .wordmark {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-accent);
-    letter-spacing: 0.05em;
-    text-decoration: none;
-    flex-shrink: 0;
+    font-family: var(--font-logo);
+    font-weight: 500;
+    font-size: 1.25rem;
+    color: var(--color-logo);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-right: 12px;
 }
 
 .divider {
     width: 1px;
-    height: 18px;
+    height: 16px;
     background: var(--color-border);
+    margin-right: 12px;
     flex-shrink: 0;
 }
 
 .navLinks {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 2px;
     flex: 1;
 }
 
 .navLink {
-    padding: 0.4rem 0.875rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.8125rem;
-    font-weight: 400;
-    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    color: var(--color-text-muted);
     text-decoration: none;
-    transition: color 0.15s, background 0.15s;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    transition: color 0.2s;
 }
 
 .navLink:hover {
-    color: var(--color-text);
-    background: var(--color-border-soft);
+    color: var(--color-text-secondary);
 }
 
 .navLinkActive {
-    color: var(--color-accent);
-    background: var(--color-accent-muted);
-    font-weight: 500;
+    color: var(--color-text);
 }
 
 .themeToggle {
-    margin-left: auto;
-    background: none;
-    border: 1px solid var(--color-border);
+    width: 30px;
+    height: 30px;
     border-radius: var(--radius-sm);
-    width: 32px;
-    height: 32px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    transition: border-color 0.15s, color 0.15s;
+    font-size: 1.25rem;
+    transition: border-color 0.2s, color 0.2s;
     flex-shrink: 0;
 }
 
@@ -138,7 +92,10 @@ html.light {
 }
 
 .main {
-    max-width: 1100px;
+    padding: 32px;
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2.5rem 2rem;
+    box-sizing: border-box;
 }
