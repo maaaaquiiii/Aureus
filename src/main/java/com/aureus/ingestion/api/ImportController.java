@@ -20,4 +20,16 @@ public class ImportController {
     public ResponseEntity<ImportResponse> importCsv(@Valid @RequestBody ImportRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(importService.importCsv(request));
     }
+
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<Void> deleteImportJob(@PathVariable Long jobId) {
+        importService.deleteImportJob(jobId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Void> deleteAllImportJobs(@PathVariable Long userId) {
+        importService.deleteAllImportJobs(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

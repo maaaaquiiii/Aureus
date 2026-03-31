@@ -122,7 +122,7 @@ public class RevolutCsvParser {
         if (containsAny(desc, "uber", "cabify", "bolt", "renfe", "metro", "emt", "aena", "ryanair", "vueling", "blablacar", "consorcio regional de transportes", "national transport authority",
                 "parking", "gasolinera", "repsol", "bp ", "cepsa")) return "Transport";
         if (containsAny(desc, "zara", "h&m", "mango", "primark", "primaprix", "bershka", "pull&bear", "stradivarius",
-                "massimo dutti", "el corte ingles", "el corte inglés", "amazon", "aliexpress", "shein", "asos", "normal ",
+                "massimo dutti", "el corte ingles", "el corte inglés", "amazon", "aliexpress", "shein", "asos", "normal",
                 "fnac", "media markt", "on stage", "notino", "druni", "tk maxx", "bernabéu market", "bernabeu market", "sp mysticalluxe", "awx dolaka", "muy mucho", "expenduria", "expendedurias",
                 "tabacos", "tabaco", "estanco")) return "Shopping";
         if (containsAny(desc, "farmacia", "clinica", "dentista", "medico", "hospital", "optica", "óptica",

@@ -87,9 +87,25 @@ public class ImportService {
                 .findFirst()
                 .ifPresent(job -> {
                     throw new RuntimeException(
-                            "El archivo '" + fileName + "' ya fue importado el " +
-                                    job.getCreatedAt().toLocalDate()
+                            "El archivo '" + fileName + "' ya fue importado el " + job.getCreatedAt().toLocalDate()
                     );
                 });
+    }
+
+    @Transactional
+    public void deleteImportJob(Long jobId) {
+        ImportJob job = importJobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Import job not found: " + jobId));
+        expenseRepository.deleteByImportJobId(jobId);
+        importJobRepository.delete(job);
+    }
+
+    @Transactional
+    public void deleteAllImportJobs(Long userId) {
+        List<ImportJob> jobs = importJobRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        for (ImportJob job : jobs) {
+            expenseRepository.deleteByImportJobId(job.getId());
+        }
+        importJobRepository.deleteAll(jobs);
     }
 }

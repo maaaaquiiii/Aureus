@@ -15,8 +15,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT e FROM Expense e WHERE e.user.id = :userId " +
             "AND e.incurredOn >= :start AND e.incurredOn <= :end")
-    List<Expense> findByUserIdAndIncurredOnBetween(
-            @Param("userId") Long userId,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end);
+    List<Expense> findByUserIdAndIncurredOnBetween(@Param("userId") Long userId, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    void deleteByImportJobId(Long importJobId);
 }

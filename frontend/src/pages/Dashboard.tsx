@@ -8,7 +8,6 @@ import type { MonthlySummary, Expense, MonthlyEvolution, CategorySummary } from 
 import styles from "./Dashboard.module.css";
 
 // helpers
-
 function currentMonth(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -53,7 +52,6 @@ function EvolutionTooltip({ active, payload, label }: TooltipProps) {
 }
 
 // category row
-
 function CategoryRow({ cat, max }: { cat: CategorySummary; max: number }) {
     const pct = max > 0 ? (cat.spent / max) * 100 : 0;
     return (
@@ -63,15 +61,17 @@ function CategoryRow({ cat, max }: { cat: CategorySummary; max: number }) {
                 <span className={styles.categoryAmount}>{fmt(cat.spent)}</span>
             </div>
             <div className={styles.categoryBar}>
-                <div className={styles.categoryBarFill} style={{ width: `${pct}%`, background: cat.color || "var(--color-accent)" }} />
+                <div
+                    className={styles.categoryBarFill}
+                    style={{ width: `${pct}%`, background: cat.color || "var(--color-accent)" }}
+                />
             </div>
         </div>
     );
 }
 
 // main
-
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 
 export default function Dashboard() {
     const [month, setMonth] = useState(currentMonth());
@@ -81,6 +81,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -96,6 +97,7 @@ export default function Dashboard() {
                 setExpenses(e);
                 setEvolution(ev);
                 setPage(0);
+                setSelectedCategory(null);
             } catch {
                 setError("No se pudieron cargar los datos. ¿Está el backend levantado?");
             } finally {
@@ -118,8 +120,20 @@ export default function Dashboard() {
         if (next <= currentMonth()) setMonth(next);
     }
 
-    const totalPages = Math.ceil(expenses.length / PAGE_SIZE);
-    const pagedExpenses = expenses.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+    // filtrado y paginación
+
+    const uniqueCategories = [...new Set(expenses.map(e => e.category))].sort();
+
+    const filteredExpenses = selectedCategory
+        ? expenses.filter(e => e.category === selectedCategory)
+        : expenses;
+
+    const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
+    const pagedExpenses = filteredExpenses.slice(
+        page * PAGE_SIZE,
+        page * PAGE_SIZE + PAGE_SIZE
+    );
+
     const pieData = summary?.categories ?? [];
     const maxSpent = Math.max(...(summary?.categories.map(c => c.spent) ?? [1]));
     const budgetPct = summary && summary.totalBudget > 0
@@ -148,7 +162,9 @@ export default function Dashboard() {
             {/* kpi skeleton */}
             {loading && (
                 <div className={styles.kpiGrid}>
-                    {[0,1,2,3].map(i => <div key={i} className={styles.skeleton} style={{ height: 104 }} />)}
+                    {[0, 1, 2, 3].map(i => (
+                        <div key={i} className={styles.skeleton} style={{ height: 104 }} />
+                    ))}
                 </div>
             )}
 
@@ -171,13 +187,19 @@ export default function Dashboard() {
                     {budgetPct !== null && (
                         <div className={styles.kpiCard} style={{ animationDelay: "180ms" }}>
                             <p className={styles.kpiLabel}>Presupuesto usado</p>
-                            <p className={styles.kpiValue} style={{ color: budgetPct > 90 ? "var(--color-danger)" : "var(--color-accent)" }}>
+                            <p
+                                className={styles.kpiValue}
+                                style={{ color: budgetPct > 90 ? "var(--color-danger)" : "var(--color-accent)" }}
+                            >
                                 {budgetPct.toFixed(0)}%
                             </p>
                             <div className={styles.budgetBar}>
                                 <div
                                     className={styles.budgetBarFill}
-                                    style={{ width: `${budgetPct}%`, background: budgetPct > 90 ? "var(--color-danger)" : "var(--color-accent)" }}
+                                    style={{
+                                        width: `${budgetPct}%`,
+                                        background: budgetPct > 90 ? "var(--color-danger)" : "var(--color-accent)"
+                                    }}
                                 />
                             </div>
                             <p className={styles.kpiSub}>{fmt(summary.totalBudget)} total</p>
@@ -193,7 +215,10 @@ export default function Dashboard() {
                         <p className={styles.cardTitle}>Evolución mensual</p>
                         {evolution.length > 0 ? (
                             <ResponsiveContainer width="100%" height={190}>
-                                <BarChart data={evolution.map(e => ({ ...e, label: shortMonth(e.period) }))} barSize={22}>
+                                <BarChart
+                                    data={evolution.map(e => ({ ...e, label: shortMonth(e.period) }))}
+                                    barSize={22}
+                                >
                                     <XAxis
                                         dataKey="label"
                                         tick={{ fill: "var(--color-text-muted)", fontSize: 11 }}
@@ -215,16 +240,27 @@ export default function Dashboard() {
                         {pieData.length > 0 ? (
                             <div style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
                                 <PieChart width={100} height={100}>
-                                    <Pie data={pieData} dataKey="spent" cx={46} cy={46} innerRadius={28} outerRadius={46} strokeWidth={2} stroke="var(--color-surface)">
+                                    <Pie
+                                        data={pieData}
+                                        dataKey="spent"
+                                        cx={46}
+                                        cy={46}
+                                        innerRadius={28}
+                                        outerRadius={46}
+                                        strokeWidth={2}
+                                        stroke="var(--color-surface)"
+                                    >
                                         {pieData.map((entry, i) => (
                                             <Cell key={i} fill={entry.color || "var(--color-accent)"} />
                                         ))}
                                     </Pie>
                                 </PieChart>
                                 <div className={styles.categoryList}>
-                                    {[...pieData].sort((a, b) => b.spent - a.spent).map((cat, i) => (
-                                        <CategoryRow key={i} cat={cat} max={maxSpent} />
-                                    ))}
+                                    {[...pieData]
+                                        .sort((a, b) => b.spent - a.spent)
+                                        .map((cat, i) => (
+                                            <CategoryRow key={i} cat={cat} max={maxSpent} />
+                                        ))}
                                 </div>
                             </div>
                         ) : (
@@ -239,7 +275,36 @@ export default function Dashboard() {
                 <div className={styles.tableCard}>
                     <div className={styles.tableHeader}>
                         <p className={styles.cardTitle} style={{ margin: 0 }}>Gastos del mes</p>
-                        <span className={styles.tableCount}>{expenses.length} transacciones</span>
+                        <div className={styles.tableControls}>
+                            <div className={styles.categoryFilters}>
+                                <button
+                                    className={`${styles.filterBtn} ${selectedCategory === null ? styles.filterBtnActive : ""}`}
+                                    onClick={() => { setSelectedCategory(null); setPage(0); }}
+                                >
+                                    Todas
+                                </button>
+                                {uniqueCategories.map(cat => {
+                                    const color = expenses.find(e => e.category === cat)?.categoryColor;
+                                    return (
+                                        <button
+                                            key={cat}
+                                            className={`${styles.filterBtn} ${selectedCategory === cat ? styles.filterBtnActive : ""}`}
+                                            style={selectedCategory === cat ? {
+                                                background: `${color}22`,
+                                                color: color,
+                                                borderColor: `${color}66`,
+                                            } : {}}
+                                            onClick={() => { setSelectedCategory(cat); setPage(0); }}
+                                        >
+                                            {cat}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <span className={styles.tableCount}>
+                                {filteredExpenses.length} transacciones
+                            </span>
+                        </div>
                     </div>
                     <table className={styles.table}>
                         <thead>
@@ -254,13 +319,19 @@ export default function Dashboard() {
                         {pagedExpenses.map((exp) => (
                             <tr key={exp.id} className={styles.tableRow}>
                                 <td className={styles.tdDate}>
-                                    {new Date(exp.incurredOn).toLocaleDateString("es-ES", { day: "2-digit", month: "short" })}
+                                    {new Date(exp.incurredOn).toLocaleDateString("es-ES", {
+                                        day: "2-digit",
+                                        month: "short"
+                                    })}
                                 </td>
                                 <td className={styles.tdDesc}>{exp.description || "—"}</td>
                                 <td className={styles.tdCategory}>
                                         <span
                                             className={styles.categoryBadge}
-                                            style={{ background: `${exp.categoryColor}22`, color: exp.categoryColor || "var(--color-accent)" }}
+                                            style={{
+                                                background: `${exp.categoryColor}22`,
+                                                color: exp.categoryColor || "var(--color-accent)"
+                                            }}
                                         >
                                             {exp.category}
                                         </span>
@@ -272,9 +343,17 @@ export default function Dashboard() {
                     </table>
                     {totalPages > 1 && (
                         <div className={styles.pagination}>
-                            <button className={styles.paginationBtn} onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>← Anterior</button>
+                            <button
+                                className={styles.paginationBtn}
+                                onClick={() => setPage(p => Math.max(0, p - 1))}
+                                disabled={page === 0}
+                            >← Anterior</button>
                             <span className={styles.paginationLabel}>{page + 1} / {totalPages}</span>
-                            <button className={styles.paginationBtn} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}>Siguiente →</button>
+                            <button
+                                className={styles.paginationBtn}
+                                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                                disabled={page === totalPages - 1}
+                            >Siguiente →</button>
                         </div>
                     )}
                 </div>

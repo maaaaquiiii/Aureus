@@ -11,7 +11,6 @@ import type {
 const USER_ID = 1; // TODO: hardcoded until login is implemented
 
 // Expenses
-
 export const getMonthlyExpenses = async (month: string): Promise<Expense[]> => {
     const { data } = await client.get(`/expenses/users/${USER_ID}/monthly`, {
         params: { month },
@@ -20,7 +19,6 @@ export const getMonthlyExpenses = async (month: string): Promise<Expense[]> => {
 };
 
 // Analytics
-
 export const getMonthlySummary = async (month: string): Promise<MonthlySummary> => {
     const { data } = await client.get(`/analytics/users/${USER_ID}/monthly`, {
         params: { month },
@@ -36,7 +34,6 @@ export const getEvolution = async (months: number = 6): Promise<MonthlyEvolution
 };
 
 // Budgets
-
 export const getBudgets = async (period: string): Promise<Budget[]> => {
     const { data } = await client.get(`/budgets/users/${USER_ID}`, {
         params: { period },
@@ -72,7 +69,6 @@ export const deleteBudget = async (budgetId: number): Promise<void> => {
 };
 
 // Imports
-
 export const importCsv = async (
     csvContent: string,
     fileName: string
@@ -86,8 +82,15 @@ export const importCsv = async (
     return data;
 };
 
-// Categories
+export const deleteImportJob = async (jobId: number): Promise<void> => {
+    await client.delete(`/imports/${jobId}`);
+};
 
+export const deleteAllImportJobs = async (): Promise<void> => {
+    await client.delete(`/imports/users/${USER_ID}`);
+};
+
+// Categories
 export const getCategories = async (): Promise<Category[]> => {
     const { data } = await client.get("/categories");
     return data;

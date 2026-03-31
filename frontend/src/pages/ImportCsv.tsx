@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { importCsv } from "../api/services";
+import { importCsv, deleteImportJob, deleteAllImportJobs } from "../api/services";
 import type { ImportResponse } from "../api/types";
 import styles from "./ImportCsv.module.css";
 
@@ -33,6 +33,7 @@ export default function ImportCsv() {
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ImportJob[]>(loadHistory);
     const [error, setError] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const addToHistory = (job: ImportJob) => {
         setHistory(prev => {
@@ -47,8 +48,6 @@ export default function ImportCsv() {
             setError("Solo se aceptan archivos .csv");
             return;
         }
-
-        // Control de duplicados en frontend
         const alreadyImported = history.some(
             job => job.fileName === file.name && job.status === "DONE"
         );
@@ -56,7 +55,6 @@ export default function ImportCsv() {
             setError(`El archivo "${file.name}" ya fue importado anteriormente.`);
             return;
         }
-
         setError(null);
         setLoading(true);
         try {
@@ -78,16 +76,46 @@ export default function ImportCsv() {
         }
     };
 
+    const handleDelete = async (job: ImportJob) => {
+        setDeletingId(job.jobId);
+        try {
+            await deleteImportJob(job.jobId);
+            setHistory(prev => {
+                const updated = prev.filter(j => j.jobId !== job.jobId);
+                saveHistory(updated);
+                return updated;
+            });
+        } catch {
+            setError("Error al eliminar la importación.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const handleClearAll = async () => {
+        try {
+            await deleteAllImportJobs();
+            setHistory([]);
+            saveHistory([]);
+        } catch {
+            setError("Error al limpiar el historial.");
+        }
+    };
+
     const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file) handleFile(file);
+        const files = e.dataTransfer.files;
+        if (!files || files.length === 0) return;
+        Array.from(files).forEach(file => handleFile(file));
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) handleFile(file);
+    const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        for (const file of Array.from(files)) {
+            await handleFile(file);
+        }
     };
 
     return (
@@ -115,6 +143,7 @@ export default function ImportCsv() {
                     <input
                         type="file"
                         accept=".csv"
+                        multiple
                         className={styles.fileInput}
                         onChange={handleInputChange}
                         disabled={loading}
@@ -132,11 +161,8 @@ export default function ImportCsv() {
                 <div className={styles.cardHeader}>
                     <p className={styles.cardTitle}>HISTORIAL DE IMPORTACIONES</p>
                     {history.length > 0 && (
-                        <button
-                            className={styles.btnClear}
-                            onClick={() => { setHistory([]); saveHistory([]); }}
-                        >
-                            Limpiar
+                        <button className={styles.btnClear} onClick={handleClearAll}>
+                            Limpiar todo
                         </button>
                     )}
                 </div>
@@ -146,8 +172,8 @@ export default function ImportCsv() {
                     <table className={styles.table}>
                         <thead>
                         <tr>
-                            {["Archivo", "Fecha", "Filas", "Estado"].map((h) => (
-                                <th key={h} className={styles.th}>{h}</th>
+                            {["Archivo", "Fecha", "Filas", "Estado", ""].map((h, i) => (
+                                <th key={i} className={styles.th}>{h}</th>
                             ))}
                         </tr>
                         </thead>
@@ -161,6 +187,15 @@ export default function ImportCsv() {
                                         <span className={`${styles.badge} ${job.status === "DONE" ? styles.badgeDone : styles.badgeFailed}`}>
                                             {job.status}
                                         </span>
+                                </td>
+                                <td className={styles.tdActions}>
+                                    <button
+                                        className={styles.btnDelete}
+                                        onClick={() => handleDelete(job)}
+                                        disabled={deletingId === job.jobId}
+                                    >
+                                        {deletingId === job.jobId ? "..." : "Eliminar"}
+                                    </button>
                                 </td>
                             </tr>
                         ))}

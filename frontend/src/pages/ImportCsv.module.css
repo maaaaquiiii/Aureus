@@ -169,6 +169,31 @@
     font-weight: 300;
 }
 
+.tdActions {
+    padding: 0.8125rem 0;
+    text-align: right;
+}
+
+.btnDelete {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: color 0.2s;
+    padding: 0;
+}
+
+.btnDelete:hover:not(:disabled) {
+    color: var(--color-danger);
+}
+
+.btnDelete:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .badge {
     font-size: 1rem;
     font-weight: 600;
@@ -198,7 +223,7 @@
 }
 
 .btnClear {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--color-text-muted);
     background: none;
     border: none;
