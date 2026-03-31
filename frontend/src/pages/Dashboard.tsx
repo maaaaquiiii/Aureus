@@ -239,7 +239,7 @@ export default function Dashboard() {
                                 >
                                     <XAxis
                                         dataKey="label"
-                                        tick={{ fill: "var(--color-text-muted)", fontSize: 11 }}
+                                        tick={{ fill: "var(--color-text-muted)", fontSize: 15 }}
                                         axisLine={false}
                                         tickLine={false}
                                     />
