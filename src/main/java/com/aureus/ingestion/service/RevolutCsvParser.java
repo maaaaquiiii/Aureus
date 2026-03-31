@@ -119,7 +119,7 @@ public class RevolutCsvParser {
                 "manolo bakes", "avoca", "mccambridge")) return "Eating Out";
         if (containsAny(desc, "spotify", "netflix", "hbo", "disney", "amazon prime", "youtube", "apple", "apple one",
                 "icloud", "microsoft", "google one", "adobe", "chatgpt", "openai", "pearson")) return "Subscriptions";
-        if (containsAny(desc, "uber", "cabify", "bolt", "renfe", "metro", "emt", "aena", "ryanair", "vueling", "blablacar", "consorcio regional de transportes", "national transport authority",
+        if (containsAny(desc, "uber", "cabify", "bolt", "renfe", "metro", "emt", "blablacar", "consorcio regional de transportes", "national transport authority",
                 "parking", "gasolinera", "repsol", "bp ", "cepsa")) return "Transport";
         if (containsAny(desc, "zara", "h&m", "mango", "primark", "primaprix", "bershka", "pull&bear", "stradivarius",
                 "massimo dutti", "el corte ingles", "el corte inglés", "amazon", "aliexpress", "shein", "asos", "normal",
@@ -129,7 +129,7 @@ public class RevolutCsvParser {
                 "visionlab", "soloptical", "sanitas", "adeslas", "gym", "gimnasio", "doctor", "fisio")) return "Health";
         if (containsAny(desc, "cine", "teatro", "concierto", "ticketmaster", "entradas", "steam", "playstation",
                 "xbox", "nintendo", "escape room")) return "Entertainment";
-        if (containsAny(desc, "hotel", "booking", "airbnb", "hostel", "trivago", "expedia", "viaje", "iberia")) return "Travel";
+        if (containsAny(desc, "hotel", "booking", "airbnb", "hostel", "trivago", "expedia", "viaje", "iberia", "aena", "ryanair", "vueling")) return "Travel";
         if (containsAny(desc, "udemy", "coursera", "libro", "libreria", "academia", "escuela", "universidad", "english connection")) return "Education";
         return "Other";
     }

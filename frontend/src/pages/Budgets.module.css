@@ -3,7 +3,6 @@
 }
 
 /* page header */
-
 .pageHeader {
     display: flex;
     align-items: flex-start;
@@ -34,7 +33,6 @@
 }
 
 /* period picker */
-
 .periodPicker {
     display: flex;
     align-items: center;
@@ -76,7 +74,6 @@
 }
 
 /* primary button */
-
 .btnPrimary {
     padding: 0.5rem 1.25rem;
     background: transparent;
@@ -101,7 +98,6 @@
 }
 
 /* error */
-
 .error {
     border: 1px solid var(--color-danger);
     background: var(--color-danger-bg);
@@ -113,7 +109,6 @@
 }
 
 /* list */
-
 .list {
     display: flex;
     flex-direction: column;
@@ -121,7 +116,6 @@
 }
 
 /* budget row */
-
 .budgetRow {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -225,7 +219,6 @@
 }
 
 /* empty state */
-
 .emptyState {
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-lg);
@@ -249,7 +242,6 @@
 }
 
 /* skeleton */
-
 .skeleton {
     background: var(--color-border-soft);
     border-radius: var(--radius-lg);
@@ -257,7 +249,6 @@
 }
 
 /* modal */
-
 .overlay {
     position: fixed;
     inset: 0;
@@ -401,7 +392,6 @@
 }
 
 /* animations */
-
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }

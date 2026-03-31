@@ -28,7 +28,6 @@ function fullMonthLabel(month: string): string {
 }
 
 // tooltip
-
 interface TooltipProps {
     active?: boolean;
     payload?: { value: number }[];
@@ -82,6 +81,8 @@ export default function Dashboard() {
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<"date" | "amount" | "category" | "description">("date");
+    const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -120,13 +121,30 @@ export default function Dashboard() {
         if (next <= currentMonth()) setMonth(next);
     }
 
-    // filtrado y paginación
-
+    // filters & short
     const uniqueCategories = [...new Set(expenses.map(e => e.category))].sort();
 
-    const filteredExpenses = selectedCategory
-        ? expenses.filter(e => e.category === selectedCategory)
-        : expenses;
+    const filteredExpenses = (selectedCategory
+            ? expenses.filter(e => e.category === selectedCategory)
+            : expenses
+    ).slice().sort((a, b) => {
+        let comparison = 0;
+        switch (sortBy) {
+            case "date":
+                comparison = a.incurredOn.localeCompare(b.incurredOn);
+                break;
+            case "amount":
+                comparison = a.amount - b.amount;
+                break;
+            case "category":
+                comparison = a.category.localeCompare(b.category);
+                break;
+            case "description":
+                comparison = (a.description || "").localeCompare(b.description || "");
+                break;
+        }
+        return sortDir === "asc" ? comparison : -comparison;
+    });
 
     const totalPages = Math.ceil(filteredExpenses.length / PAGE_SIZE);
     const pagedExpenses = filteredExpenses.slice(
@@ -276,30 +294,44 @@ export default function Dashboard() {
                     <div className={styles.tableHeader}>
                         <p className={styles.cardTitle} style={{ margin: 0 }}>Gastos del mes</p>
                         <div className={styles.tableControls}>
-                            <div className={styles.categoryFilters}>
+                            <div className={styles.tableFilters}>
+                                <div className={styles.selectWrapper}>
+                                    <select
+                                        className={styles.filterSelect}
+                                        value={selectedCategory ?? ""}
+                                        onChange={e => {
+                                            setSelectedCategory(e.target.value || null);
+                                            setPage(0);
+                                        }}
+                                    >
+                                        <option value="">Todas las categorías</option>
+                                        {uniqueCategories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className={styles.selectWrapper}>
+                                    <select
+                                        className={styles.filterSelect}
+                                        value={sortBy}
+                                        onChange={e => {
+                                            setSortBy(e.target.value as typeof sortBy);
+                                            setPage(0);
+                                        }}
+                                    >
+                                        <option value="date">Ordenar por fecha</option>
+                                        <option value="amount">Ordenar por importe</option>
+                                        <option value="category">Ordenar por categoría</option>
+                                        <option value="description">Ordenar por descripción</option>
+                                    </select>
+                                </div>
                                 <button
-                                    className={`${styles.filterBtn} ${selectedCategory === null ? styles.filterBtnActive : ""}`}
-                                    onClick={() => { setSelectedCategory(null); setPage(0); }}
+                                    className={styles.sortDirBtn}
+                                    onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
+                                    title={sortDir === "asc" ? "Ascendente" : "Descendente"}
                                 >
-                                    Todas
+                                    {sortDir === "asc" ? "↑" : "↓"}
                                 </button>
-                                {uniqueCategories.map(cat => {
-                                    const color = expenses.find(e => e.category === cat)?.categoryColor;
-                                    return (
-                                        <button
-                                            key={cat}
-                                            className={`${styles.filterBtn} ${selectedCategory === cat ? styles.filterBtnActive : ""}`}
-                                            style={selectedCategory === cat ? {
-                                                background: `${color}22`,
-                                                color: color,
-                                                borderColor: `${color}66`,
-                                            } : {}}
-                                            onClick={() => { setSelectedCategory(cat); setPage(0); }}
-                                        >
-                                            {cat}
-                                        </button>
-                                    );
-                                })}
                             </div>
                             <span className={styles.tableCount}>
                                 {filteredExpenses.length} transacciones

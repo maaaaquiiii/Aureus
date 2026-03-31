@@ -3,8 +3,7 @@ import { getBudgets, createBudget, updateBudget, deleteBudget, getCategories } f
 import type { Budget, Category } from "../api/types";
 import styles from "./Budgets.module.css";
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
-
+// helpers
 function currentPeriod(): string {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -19,8 +18,7 @@ function periodLabel(period: string): string {
     return new Date(Number(y), Number(m) - 1).toLocaleDateString("es-ES", { month: "long", year: "numeric" });
 }
 
-// ─── form type ────────────────────────────────────────────────────────────────
-
+// form type
 interface BudgetForm {
     categoryId: number | "";
     period: string;
@@ -29,7 +27,7 @@ interface BudgetForm {
 
 const EMPTY_FORM: BudgetForm = { categoryId: "", period: currentPeriod(), limitAmount: "" };
 
-// ─── budget modal ─────────────────────────────────────────────────────────────
+// budget modal
 
 interface ModalProps {
     title: string;
@@ -100,8 +98,7 @@ function BudgetModal({ title, onClose, onSubmit, form, setForm, saving, error, c
     );
 }
 
-// ─── confirm modal ────────────────────────────────────────────────────────────
-
+// confirm modal
 function ConfirmModal({ onClose, onConfirm, saving }: { onClose: () => void; onConfirm: () => void; saving: boolean }) {
     return (
         <div className={styles.overlay} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -124,8 +121,7 @@ function ConfirmModal({ onClose, onConfirm, saving }: { onClose: () => void; onC
     );
 }
 
-// ─── budget row ───────────────────────────────────────────────────────────────
-
+// budget row
 interface BudgetRowProps {
     budget: Budget;
     onEdit: () => void;
@@ -152,8 +148,7 @@ function BudgetRow({ budget, onEdit, onDelete }: BudgetRowProps) {
     );
 }
 
-// ─── main ─────────────────────────────────────────────────────────────────────
-
+// main
 export default function Budgets() {
     const [period, setPeriod] = useState(currentPeriod());
     const [budgets, setBudgets] = useState<Budget[]>([]);
