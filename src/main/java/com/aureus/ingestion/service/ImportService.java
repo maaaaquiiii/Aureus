@@ -60,8 +60,11 @@ public class ImportService {
                     job.getStatus(),
                     job.getTotalRows(),
                     job.getImportedRows(),
-                    null
+                    null,
+                    job.getFileName(),
+                    job.getCreatedAt()
             );
+
         } catch (Exception e) {
             // If anything fails, mark the job as FAILED and record the error
             job.setStatus("FAILED");
@@ -73,7 +76,9 @@ public class ImportService {
                     job.getStatus(),
                     0,
                     0,
-                    e.getMessage()
+                    e.getMessage(),
+                    job.getFileName(),
+                    job.getCreatedAt()
             );
         }
     }
@@ -98,6 +103,22 @@ public class ImportService {
                 .orElseThrow(() -> new RuntimeException("Import job not found: " + jobId));
         expenseRepository.deleteByImportJobId(jobId);
         importJobRepository.delete(job);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ImportResponse> getImportJobs(Long userId) {
+        return importJobRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(job -> new ImportResponse(
+                        job.getId(),
+                        job.getStatus(),
+                        job.getTotalRows(),
+                        job.getImportedRows(),
+                        job.getErrorDetail(),
+                        job.getFileName(),
+                        job.getCreatedAt()
+                ))
+                .toList();
     }
 
     @Transactional

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/imports")
 public class ImportController {
@@ -19,6 +21,11 @@ public class ImportController {
     @PostMapping
     public ResponseEntity<ImportResponse> importCsv(@Valid @RequestBody ImportRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(importService.importCsv(request));
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<ImportResponse>> getImportJobs(@PathVariable Long userId) {
+        return ResponseEntity.ok(importService.getImportJobs(userId));
     }
 
     @DeleteMapping("/{jobId}")

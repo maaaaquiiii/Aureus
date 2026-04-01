@@ -5,6 +5,13 @@ export interface User {
     currency: string;
 }
 
+export interface AuthResponse {
+    token: string;
+    userId: number;
+    email: string;
+    name: string;
+}
+
 export interface Category {
     id: number;
     name: string;
@@ -63,4 +70,6 @@ export interface ImportResponse {
     totalRows: number;
     importedRows: number;
     errorDetail: string | null;
+    fileName: string;
+    createdAt: string;
 }

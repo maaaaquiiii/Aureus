@@ -1,18 +1,30 @@
 import client from "./client";
-import type {
-    Expense,
-    MonthlySummary,
-    MonthlyEvolution,
-    Budget,
-    ImportResponse,
-    Category,
-} from "./types";
+import type {Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse} from "./types";
 
-const USER_ID = 1; // TODO: hardcoded until login is implemented
+const getUserId = (): number => {
+    const stored = localStorage.getItem("auth");
+    if (!stored) throw new Error("No autenticado");
+    return JSON.parse(stored).userId;
+};
+
+export const login = async (email: string, password: string): Promise<AuthResponse> => {
+    const { data } = await client.post("/auth/login", { email, password });
+    return data;
+};
+
+export const register = async (
+    email: string,
+    name: string,
+    password: string,
+    currency: string = "EUR"
+): Promise<AuthResponse> => {
+    const { data } = await client.post("/auth/register", { email, name, password, currency });
+    return data;
+};
 
 // Expenses
 export const getMonthlyExpenses = async (month: string): Promise<Expense[]> => {
-    const { data } = await client.get(`/expenses/users/${USER_ID}/monthly`, {
+    const { data } = await client.get(`/expenses/users/${getUserId()}/monthly`, {
         params: { month },
     });
     return data;
@@ -20,14 +32,14 @@ export const getMonthlyExpenses = async (month: string): Promise<Expense[]> => {
 
 // Analytics
 export const getMonthlySummary = async (month: string): Promise<MonthlySummary> => {
-    const { data } = await client.get(`/analytics/users/${USER_ID}/monthly`, {
+    const { data } = await client.get(`/analytics/users/${getUserId()}/monthly`, {
         params: { month },
     });
     return data;
 };
 
 export const getEvolution = async (months: number = 6): Promise<MonthlyEvolution[]> => {
-    const { data } = await client.get(`/analytics/users/${USER_ID}/evolution`, {
+    const { data } = await client.get(`/analytics/users/${getUserId()}/evolution`, {
         params: { months },
     });
     return data;
@@ -35,7 +47,7 @@ export const getEvolution = async (months: number = 6): Promise<MonthlyEvolution
 
 // Budgets
 export const getBudgets = async (period: string): Promise<Budget[]> => {
-    const { data } = await client.get(`/budgets/users/${USER_ID}`, {
+    const { data } = await client.get(`/budgets/users/${getUserId()}`, {
         params: { period },
     });
     return data;
@@ -47,7 +59,7 @@ export const createBudget = async (budget: {
     limitAmount: number;
 }): Promise<Budget> => {
     const { data } = await client.post("/budgets", {
-        userId: USER_ID,
+        userId: getUserId(),
         ...budget,
     });
     return data;
@@ -58,7 +70,7 @@ export const updateBudget = async (
     budget: { categoryId: number; period: string; limitAmount: number }
 ): Promise<Budget> => {
     const { data } = await client.put(`/budgets/${budgetId}`, {
-        userId: USER_ID,
+        userId: getUserId(),
         ...budget,
     });
     return data;
@@ -74,11 +86,16 @@ export const importCsv = async (
     fileName: string
 ): Promise<ImportResponse> => {
     const { data } = await client.post("/imports", {
-        userId: USER_ID,
+        userId: getUserId(),
         source: "revolut",
         csvContent,
         fileName,
     });
+    return data;
+};
+
+export const getImportJobs = async (): Promise<ImportResponse[]> => {
+    const { data } = await client.get(`/imports/users/${getUserId()}`);
     return data;
 };
 
@@ -87,7 +104,7 @@ export const deleteImportJob = async (jobId: number): Promise<void> => {
 };
 
 export const deleteAllImportJobs = async (): Promise<void> => {
-    await client.delete(`/imports/users/${USER_ID}`);
+    await client.delete(`/imports/users/${getUserId()}`);
 };
 
 // Categories

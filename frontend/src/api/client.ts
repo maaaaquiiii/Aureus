@@ -7,4 +7,13 @@ const client = axios.create({
     },
 });
 
+client.interceptors.request.use((config) => {
+    const stored = localStorage.getItem("auth");
+    if (stored) {
+        const { token } = JSON.parse(stored);
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 export default client;
