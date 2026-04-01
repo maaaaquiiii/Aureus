@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false, length = 3)
     private String currency = "EUR";
 
+    @Column(nullable = false)
+    private String passwordHash = "";
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -32,6 +35,9 @@ public class User {
 
     public String getCurrency() { return currency; }
     public void setCurrency(String currency) { this.currency = currency; }
+
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }
