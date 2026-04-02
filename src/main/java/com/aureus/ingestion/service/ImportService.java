@@ -29,10 +29,10 @@ public class ImportService {
     }
 
     @Transactional
-    public ImportResponse importCsv(ImportRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new RuntimeException("User not found: " + request.userId()));
-        checkDuplicate(request.userId(), request.fileName());
+    public ImportResponse importCsv(ImportRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        checkDuplicate(userId, request.fileName());
         // Create the import job with a PROCESSING status
         ImportJob job = new ImportJob();
         job.setUser(user);
@@ -83,7 +83,6 @@ public class ImportService {
         }
     }
 
-    @Transactional(readOnly = true)
     private void checkDuplicate(Long userId, String fileName) {
         importJobRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()

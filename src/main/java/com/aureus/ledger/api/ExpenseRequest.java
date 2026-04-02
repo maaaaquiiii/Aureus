@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ExpenseRequest(
-        @NotNull Long userId,
         @NotNull Long categoryId,
         @NotNull @DecimalMin("0.01") BigDecimal amount,
         @NotBlank String currency,

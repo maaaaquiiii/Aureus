@@ -14,57 +14,42 @@
     margin-bottom: 2.5rem;
 }
 
-.logoMark {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-logo);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 0.75rem;
-    box-shadow: var(--shadow-md);
-}
-
-.logoMark span {
-    color: #0D1321;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 1.25rem;
+.logoSvg {
+    display: block;
+    margin: 0 auto 1rem;
+    opacity: 0.9;
 }
 
 .logoName {
-    font-family: var(--font-display);
+    font-family: var(--font-logo);
     font-size: 1.75rem;
-    font-weight: 500;
-    color: var(--color-text);
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: var(--color-logo);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
     margin: 0;
 }
 
 .logoSub {
+    font-family: var(--font-body);
     font-size: 1rem;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    margin: 0.25rem 0 0;
+    margin: 0.4rem 0 0;
     font-weight: 300;
+    opacity: 0.7;
 }
 
 /* card */
 .card {
     width: 100%;
-    max-width: 400px;
+    max-width: 750px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: var(--shadow-md);
-    transition: transform 0.3s ease-in-out;
-}
-
-.card.flipping {
-    transform: rotateY(90deg);
 }
 
 .accentBar {
@@ -74,7 +59,8 @@
 }
 
 .cardInner {
-    padding: 2rem;
+    padding: 3rem;
+    animation: fadeUp 0.35s ease forwards;
 }
 
 /* toggle */
@@ -127,11 +113,23 @@
     font-weight: 300;
 }
 
+/* form wrapper */
+.formWrapper {
+    position: relative;
+    overflow: hidden;
+    perspective: 800px;
+}
+
 /* form */
 .form {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.formSlide {
+    animation: flipIn 0.35s ease forwards;
+    transform-origin: top center;
 }
 
 .field {
@@ -186,6 +184,64 @@
     color: var(--color-text);
 }
 
+/* password */
+.passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordWrapper .input {
+    padding-right: 2rem;
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 0;
+    bottom: 0.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+    flex-shrink: 0;
+}
+
+.eyeBtn:hover {
+    color: var(--color-logo);
+}
+
+.eyeBtn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* remember me */
+.rememberRow {
+    display: flex;
+    align-items: center;
+}
+
+.rememberLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-weight: 300;
+}
+
+.rememberCheck {
+    accent-color: var(--color-logo);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
 /* submit button */
 .submitBtn {
     margin-top: 0.5rem;
@@ -229,35 +285,13 @@
     letter-spacing: 0.05em;
 }
 
-/* animation */
+/* animations */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-.cardInner {
-    animation: fadeUp 0.35s ease forwards;
-}
-
-/* remember me */
-.rememberRow {
-    display: flex;
-    align-items: center;
-}
-
-.rememberLabel {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    font-weight: 300;
-}
-
-.rememberCheck {
-    accent-color: var(--color-logo);
-    width: 14px;
-    height: 14px;
-    cursor: pointer;
+@keyframes flipIn {
+    from { opacity: 0; transform: rotateX(-15deg) translateY(10px); }
+    to   { opacity: 1; transform: rotateX(0) translateY(0); }
 }

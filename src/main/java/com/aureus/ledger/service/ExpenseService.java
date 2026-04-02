@@ -21,9 +21,9 @@ public class ExpenseService {
     }
 
     @Transactional
-    public ExpenseResponse createExpense(ExpenseRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new RuntimeException("User not found: " + request.userId()));
+    public ExpenseResponse createExpense(ExpenseRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found: " + request.categoryId()));

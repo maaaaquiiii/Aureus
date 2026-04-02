@@ -20,14 +20,14 @@ public class BudgetService {
     }
 
     @Transactional
-    public BudgetResponse createBudget(BudgetRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new RuntimeException("User not found: " + request.userId()));
+    public BudgetResponse createBudget(BudgetRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found: " + request.categoryId()));
 
         // Check if a budget already exists for this user, category, and period (month)
-        budgetRepository.findByUserIdAndCategoryIdAndPeriod(request.userId(), request.categoryId(),
+        budgetRepository.findByUserIdAndCategoryIdAndPeriod(userId, request.categoryId(),
                 request.period()).ifPresent(b -> {
             throw new RuntimeException("Budget already exists for this category and period");
         });

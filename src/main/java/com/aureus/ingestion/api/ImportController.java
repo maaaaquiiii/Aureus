@@ -1,11 +1,11 @@
 package com.aureus.ingestion.api;
 
 import com.aureus.ingestion.service.ImportService;
+import com.aureus.platform.security.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -13,14 +13,20 @@ import java.util.List;
 public class ImportController {
 
     private final ImportService importService;
+    private final JwtService jwtService;
 
-    public ImportController(ImportService importService) {
+    public ImportController(ImportService importService, JwtService jwtService) {
         this.importService = importService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
-    public ResponseEntity<ImportResponse> importCsv(@Valid @RequestBody ImportRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(importService.importCsv(request));
+    public ResponseEntity<ImportResponse> importCsv(
+            @Valid @RequestBody ImportRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        Long userId = jwtService.extractUserId(authHeader.substring(7));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(importService.importCsv(request, userId));
     }
 
     @GetMapping("/users/{userId}")
