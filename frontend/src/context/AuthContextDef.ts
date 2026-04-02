@@ -4,7 +4,7 @@ import type { AuthResponse } from "../api/types";
 interface AuthContextType {
     user: AuthResponse | null;
     token: string | null;
-    login: (data: AuthResponse) => void;
+    login: (data: AuthResponse, remember: boolean) => void;
     logout: () => void;
 }
 

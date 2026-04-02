@@ -7,11 +7,15 @@ const client = axios.create({
     },
 });
 
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null) {
+    authToken = token;
+}
+
 client.interceptors.request.use((config) => {
-    const stored = localStorage.getItem("auth");
-    if (stored) {
-        const { token } = JSON.parse(stored);
-        config.headers.Authorization = `Bearer ${token}`;
+    if (authToken) {
+        config.headers.Authorization = `Bearer ${authToken}`;
     }
     return config;
 });

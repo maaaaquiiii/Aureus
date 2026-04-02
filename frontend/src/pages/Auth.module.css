@@ -238,3 +238,26 @@
 .cardInner {
     animation: fadeUp 0.35s ease forwards;
 }
+
+/* remember me */
+.rememberRow {
+    display: flex;
+    align-items: center;
+}
+
+.rememberLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-weight: 300;
+}
+
+.rememberCheck {
+    accent-color: var(--color-logo);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}

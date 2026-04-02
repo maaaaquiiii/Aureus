@@ -2,16 +2,18 @@ import client from "./client";
 import type {Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse} from "./types";
 
 const getUserId = (): number => {
-    const stored = localStorage.getItem("auth");
+    const stored = localStorage.getItem("auth") || sessionStorage.getItem("auth");
     if (!stored) throw new Error("No autenticado");
     return JSON.parse(stored).userId;
 };
 
+// Login
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
     const { data } = await client.post("/auth/login", { email, password });
     return data;
 };
 
+// Logout
 export const register = async (
     email: string,
     name: string,

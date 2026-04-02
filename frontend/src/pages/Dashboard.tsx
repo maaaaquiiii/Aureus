@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-    BarChart, Bar, XAxis, YAxis, Tooltip,
-    ResponsiveContainer, PieChart, Pie, Cell,
-} from "recharts";
+import { useAuth } from "../context/useAuth";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, } from "recharts";
 import { getMonthlySummary, getMonthlyExpenses, getEvolution } from "../api/services";
 import type { MonthlySummary, Expense, MonthlyEvolution, CategorySummary } from "../api/types";
 import styles from "./Dashboard.module.css";
@@ -83,8 +81,10 @@ export default function Dashboard() {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<"date" | "amount" | "category" | "description">("date");
     const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+    const { token } = useAuth();
 
     useEffect(() => {
+        if (!token) return;
         const fetchData = async () => {
             setLoading(true);
             setError(null);
@@ -106,7 +106,7 @@ export default function Dashboard() {
             }
         };
         fetchData();
-    }, [month]);
+    }, [month, token]);
 
     function prevMonth() {
         const [y, m] = month.split("-").map(Number);

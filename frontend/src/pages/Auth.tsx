@@ -11,7 +11,7 @@ export default function Auth() {
     const [flipping, setFlipping] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
+    const [remember, setRemember] = useState(false);
     const [loginForm, setLoginForm] = useState({ email: "", password: "" });
     const [registerForm, setRegisterForm] = useState({
         email: "",
@@ -36,7 +36,7 @@ export default function Auth() {
         setLoading(true);
         try {
             const data = await loginService(loginForm.email, loginForm.password);
-            login(data);
+            login(data, remember);
             navigate("/dashboard");
         } catch {
             setError("Email o contraseña incorrectos");
@@ -56,7 +56,7 @@ export default function Auth() {
                 registerForm.password,
                 registerForm.currency
             );
-            login(data);
+            login(data, false);
             navigate("/dashboard");
         } catch {
             setError("No se pudo completar el registro. El email puede que ya esté en uso.");
@@ -109,7 +109,6 @@ export default function Auth() {
                                     <input
                                         type="email"
                                         className={styles.input}
-                                        placeholder="tu@email.com"
                                         value={loginForm.email}
                                         onChange={(e) =>
                                             setLoginForm({ ...loginForm, email: e.target.value })
@@ -122,13 +121,23 @@ export default function Auth() {
                                     <input
                                         type="password"
                                         className={styles.input}
-                                        placeholder="••••••••"
                                         value={loginForm.password}
                                         onChange={(e) =>
                                             setLoginForm({ ...loginForm, password: e.target.value })
                                         }
                                         required
                                     />
+                                </div>
+                                <div className={styles.rememberRow}>
+                                    <label className={styles.rememberLabel}>
+                                        <input
+                                            type="checkbox"
+                                            checked={remember}
+                                            onChange={(e) => setRemember(e.target.checked)}
+                                            className={styles.rememberCheck}
+                                        />
+                                        Recuérdame
+                                    </label>
                                 </div>
                                 <button
                                     type="submit"
