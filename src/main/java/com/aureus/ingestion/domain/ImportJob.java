@@ -28,6 +28,10 @@ public class ImportJob {
 
     private Integer importedRows;
 
+    // Number of rows skipped because they already exist in the database (duplicate detection)
+    @Column(name = "skipped_rows")
+    private Integer skippedRows = 0;
+
     @Column(columnDefinition = "TEXT")
     private String errorDetail;
 
@@ -55,6 +59,9 @@ public class ImportJob {
 
     public Integer getImportedRows() { return importedRows; }
     public void setImportedRows(Integer importedRows) { this.importedRows = importedRows; }
+
+    public Integer getSkippedRows() { return skippedRows; }
+    public void setSkippedRows(Integer skippedRows) { this.skippedRows = skippedRows; }
 
     public String getErrorDetail() { return errorDetail; }
     public void setErrorDetail(String errorDetail) { this.errorDetail = errorDetail; }

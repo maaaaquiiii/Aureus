@@ -52,6 +52,16 @@ public class ExpenseService {
                 .toList();
     }
 
+    @Transactional
+    public void updateCategory(Long expenseId, Long categoryId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new RuntimeException("Expense not found: " + expenseId));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
+        expense.setCategory(category);
+        expenseRepository.save(expense);
+    }
+
     private ExpenseResponse toResponse(Expense expense) {
         return new ExpenseResponse(
                 expense.getId(),

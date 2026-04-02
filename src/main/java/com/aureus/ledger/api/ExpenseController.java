@@ -36,4 +36,12 @@ public class ExpenseController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
         return expenseService.findMonthlyExpenses(userId, month);
     }
+
+    @PatchMapping("/{expenseId}/category")
+    public ResponseEntity<Void> updateCategory(
+            @PathVariable Long expenseId,
+            @RequestBody UpdateExpenseCategoryRequest request) {
+        expenseService.updateCategory(expenseId, request.categoryId());
+        return ResponseEntity.noContent().build();
+    }
 }

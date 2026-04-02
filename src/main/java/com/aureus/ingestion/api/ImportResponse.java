@@ -7,6 +7,7 @@ public record ImportResponse(
         String status,
         int totalRows,
         int importedRows,
+        int skippedRows,
         String errorDetail,
         String fileName,
         LocalDateTime createdAt

@@ -215,6 +215,27 @@
     transition: width 0.6s ease;
 }
 
+.categorySelect {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.categorySelect:focus {
+    border-color: var(--color-text-muted);
+}
+
+.categorySelect:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* table */
 .tableCard {
     background: var(--color-surface);

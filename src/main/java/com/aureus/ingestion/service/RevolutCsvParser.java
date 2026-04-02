@@ -5,13 +5,19 @@ import com.aureus.ledger.domain.CategoryRepository;
 import com.aureus.ledger.domain.Expense;
 import com.aureus.ledger.domain.User;
 import org.springframework.stereotype.Component;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
+
 @Component
 public class RevolutCsvParser {
     private static final DateTimeFormatter FORMATTER =
@@ -48,36 +54,49 @@ public class RevolutCsvParser {
     }
 
     private Expense parseLine(String line, User user) {
+        // Split on commas that are not inside quoted fields
         String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
-        if (fields.length < 8) return null;
-        String type = clean(fields[0]);
+        if (fields.length < 9) return null;
+
+        String type        = clean(fields[0]);
         String startedDate = clean(fields[2]);
         String description = clean(fields[4]);
-        String amountStr = clean(fields[5]);
-        String currency = clean(fields[7]);
-        String state = clean(fields[8]);
+        String amountStr   = clean(fields[5]);
+        String currency    = clean(fields[7]);
+        String state       = clean(fields[8]);
 
+        // Only process completed transactions (supports both English and Spanish CSV exports)
         if (!"COMPLETED".equalsIgnoreCase(state) && !"COMPLETADO".equalsIgnoreCase(state)) return null;
+
+        // Skip internal transfers, top-ups and refunds — they are not real expenses
         if (type.equalsIgnoreCase("TRANSFERIR") ||
                 type.equalsIgnoreCase("TRANSFER")) return null;
         if (type.equalsIgnoreCase("RECARGAS") ||
                 type.equalsIgnoreCase("TOPUP")) return null;
         if (type.equalsIgnoreCase("REEMBOLSO DE TARJETA") ||
                 type.equalsIgnoreCase("REFUND")) return null;
+
+        // Only import negative amounts (money going out)
         BigDecimal amount = new BigDecimal(amountStr);
         if (amount.compareTo(BigDecimal.ZERO) >= 0) return null;
         amount = amount.abs();
+
         LocalDate date = LocalDate.parse(startedDate, FORMATTER);
+
+        // For card payments, infer the category from the merchant description;
+        // for other types, map directly from the Revolut transaction type
         String categoryName = type.equalsIgnoreCase("PAGO CON TARJETA") ||
                 type.equalsIgnoreCase("CARD_PAYMENT")
                 ? mapByDescription(description)
                 : mapRevolutType(type);
+
         Category category = categoryRepository
                 .findByNameIgnoreCase(categoryName)
                 .orElseGet(() -> categoryRepository
                         .findByNameIgnoreCase("Other")
                         .orElseThrow());
+
         Expense expense = new Expense();
         expense.setUser(user);
         expense.setCategory(category);
@@ -86,27 +105,47 @@ public class RevolutCsvParser {
         expense.setIncurredOn(date);
         expense.setDescription(description);
         expense.setSource("revolut");
+        // Generate a deterministic fingerprint to detect duplicates across overlapping exports
+        expense.setExternalId(buildExternalId(startedDate, description, amountStr, currency));
         return expense;
+    }
+
+    /**
+     * Builds a SHA-256 fingerprint from the fields that uniquely identify a transaction.
+     * The started date (precise to the second) combined with description, amount and currency
+     * is unique enough to safely deduplicate across overlapping Revolut CSV exports.
+     */
+    private String buildExternalId(String startedDate, String description, String amount, String currency) {
+        String raw = startedDate + "|" + description + "|" + amount + "|" + currency;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(raw.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash); // 64-character hex string
+        } catch (NoSuchAlgorithmException e) {
+            // SHA-256 is guaranteed to be available in any standard JVM — this branch is unreachable
+            return raw;
+        }
     }
 
     private String mapRevolutType(String revolutType) {
         return switch (revolutType.toUpperCase()) {
             // English
-            case "CARD_PAYMENT" -> "Eating Out";
-            case "TRANSFER" -> "Other";
-            case "TOPUP" -> "Other";
-            case "ATM" -> "Other";
-            case "SUBSCRIPTION" -> "Subscriptions";
-            case "TRAVEL" -> "Travel";
-            // Spanis
-            case "PAGO CON TARJETA" -> "Eating Out";
-            case "TRANSFERIR" -> "Other";
-            case "RECARGAS" -> "Other";
+            case "CARD_PAYMENT"         -> "Eating Out";
+            case "TRANSFER"             -> "Other";
+            case "TOPUP"                -> "Other";
+            case "ATM"                  -> "Other";
+            case "SUBSCRIPTION"         -> "Subscriptions";
+            case "TRAVEL"               -> "Travel";
+            // Spanish
+            case "PAGO CON TARJETA"     -> "Eating Out";
+            case "TRANSFERIR"           -> "Other";
+            case "RECARGAS"             -> "Other";
             case "REEMBOLSO DE TARJETA" -> "Other";
-            case "CAJERO AUTOMÁTICO" -> "Other";
-            default -> "Other";
+            case "CAJERO AUTOMÁTICO"    -> "Other";
+            default                     -> "Other";
         };
     }
+
     private String mapByDescription(String description) {
         String desc = description.toLowerCase();
 

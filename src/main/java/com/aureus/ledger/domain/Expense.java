@@ -40,6 +40,10 @@ public class Expense {
     @Column(length = 100)
     private String source;
 
+    // SHA-256 hash used to detect duplicate transactions across overlapping CSV exports
+    @Column(name = "external_id", length = 64)
+    private String externalId;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -68,6 +72,9 @@ public class Expense {
 
     public String getSource() { return source; }
     public void setSource(String source) { this.source = source; }
+
+    public String getExternalId() { return externalId; }
+    public void setExternalId(String externalId) { this.externalId = externalId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

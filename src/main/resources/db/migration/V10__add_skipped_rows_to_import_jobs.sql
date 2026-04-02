@@ -1,0 +1,2 @@
+ALTER TABLE import_jobs
+    ADD COLUMN IF NOT EXISTS skipped_rows INT DEFAULT 0;

@@ -114,3 +114,10 @@ export const getCategories = async (): Promise<Category[]> => {
     const { data } = await client.get("/categories");
     return data;
 };
+
+export const updateExpenseCategory = async (
+    expenseId: number,
+    categoryId: number
+): Promise<void> => {
+    await client.patch(`/expenses/${expenseId}/category`, { categoryId });
+};

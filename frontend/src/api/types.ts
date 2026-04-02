@@ -69,6 +69,7 @@ export interface ImportResponse {
     status: string;
     totalRows: number;
     importedRows: number;
+    skippedRows: number;
     errorDetail: string | null;
     fileName: string;
     createdAt: string;

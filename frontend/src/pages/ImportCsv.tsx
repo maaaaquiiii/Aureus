@@ -8,6 +8,7 @@ export default function ImportCsv() {
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ImportResponse[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [notice, setNotice] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -22,13 +23,34 @@ export default function ImportCsv() {
             return;
         }
         setError(null);
+        setNotice(null);
         setLoading(true);
         try {
             const content = await file.text();
             const response = await importCsv(content, file.name);
             setHistory(prev => [response, ...prev]);
-        } catch (e: any) {
-            setError(e?.response?.data?.message ?? "Error al importar el archivo.");
+
+            // Inform the user if some rows were skipped because they already existed
+            // from a different file with an overlapping date range
+            if (response.skippedRows > 0) {
+                setNotice(
+                    `Se importaron ${response.importedRows} transacciones de "${file.name}". ` +
+                    `${response.skippedRows} ${response.skippedRows === 1 ? "fila estaba duplicada" : "filas estaban duplicadas"} ` +
+                    `con otro fichero ya importado y se han omitido.`
+                );
+            }
+        } catch (e: unknown) {
+            // The backend returns the error message in e.response.data.message for known errors
+            // (e.g. duplicate file name) and in e.response.data for generic ones
+            const axiosError = e as { response?: { data?: { message?: string } | string } };
+            const data = axiosError?.response?.data;
+            const message =
+                typeof data === "object" && data !== null
+                    ? data.message
+                    : typeof data === "string"
+                        ? data
+                        : undefined;
+            setError(message ?? "Error al importar el archivo.");
         } finally {
             setLoading(false);
         }
@@ -103,6 +125,7 @@ export default function ImportCsv() {
             </div>
 
             {error && <div className={styles.error}><p>{error}</p></div>}
+            {notice && !error && <div className={styles.notice}><p>{notice}</p></div>}
 
             <div className={styles.card}>
                 <div className={styles.cardHeader}>
@@ -133,7 +156,19 @@ export default function ImportCsv() {
                                         ? new Date(job.createdAt).toLocaleDateString("es-ES")
                                         : "—"}
                                 </td>
-                                <td className={styles.td}>{job.importedRows} / {job.totalRows}</td>
+                                <td className={styles.td}>
+                                    {job.importedRows} / {job.totalRows}
+                                    {job.skippedRows > 0 && (
+                                        <span style={{
+                                            marginLeft: "0.5rem",
+                                            fontSize: "1em",
+                                            color: "var(--color-text-muted)",
+                                            fontWeight: 300,
+                                        }}>
+                                                ({job.skippedRows} duplicadas)
+                                            </span>
+                                    )}
+                                </td>
                                 <td className={styles.td}>
                                         <span className={`${styles.badge} ${job.status === "DONE" ? styles.badgeDone : styles.badgeFailed}`}>
                                             {job.status}

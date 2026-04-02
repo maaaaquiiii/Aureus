@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, } from "recharts";
-import { getMonthlySummary, getMonthlyExpenses, getEvolution } from "../api/services";
-import type { MonthlySummary, Expense, MonthlyEvolution, CategorySummary } from "../api/types";
+import { getMonthlySummary, getMonthlyExpenses, getEvolution, getCategories, updateExpenseCategory } from "../api/services";
+import type { MonthlySummary, Expense, MonthlyEvolution, CategorySummary, Category } from "../api/types";
 import styles from "./Dashboard.module.css";
 
 // helpers
 function currentMonth(): string {
     const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function previousMonth(): string {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 1);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
@@ -71,17 +77,25 @@ function CategoryRow({ cat, max }: { cat: CategorySummary; max: number }) {
 const PAGE_SIZE = 10;
 
 export default function Dashboard() {
-    const [month, setMonth] = useState(currentMonth());
+    const [month, setMonth] = useState<string>(previousMonth());
     const [summary, setSummary] = useState<MonthlySummary | null>(null);
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [evolution, setEvolution] = useState<MonthlyEvolution[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<"date" | "amount" | "category" | "description">("date");
     const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+    const [editingExpenseId, setEditingExpenseId] = useState<number | null>(null);
+    const [savingExpenseId, setSavingExpenseId] = useState<number | null>(null);
     const { token } = useAuth();
+
+    // Load categories once on mount — they don't change with the selected month
+    useEffect(() => {
+        getCategories().then(setCategories).catch(() => {});
+    }, []);
 
     useEffect(() => {
         if (!token) return;
@@ -108,6 +122,25 @@ export default function Dashboard() {
         fetchData();
     }, [month, token]);
 
+    // Save the new category and refresh charts and KPIs to reflect the change
+    const handleCategoryChange = async (expenseId: number, categoryId: number) => {
+        setSavingExpenseId(expenseId);
+        try {
+            await updateExpenseCategory(expenseId, categoryId);
+            const [s, e] = await Promise.all([
+                getMonthlySummary(month),
+                getMonthlyExpenses(month),
+            ]);
+            setSummary(s);
+            setExpenses(e);
+        } catch {
+            setError("No se pudo actualizar la categoría.");
+        } finally {
+            setSavingExpenseId(null);
+            setEditingExpenseId(null);
+        }
+    };
+
     function prevMonth() {
         const [y, m] = month.split("-").map(Number);
         const d = new Date(y, m - 2);
@@ -121,7 +154,7 @@ export default function Dashboard() {
         if (next <= currentMonth()) setMonth(next);
     }
 
-    // filters & short
+    // filters & sort
     const uniqueCategories = [...new Set(expenses.map(e => e.category))].sort();
 
     const filteredExpenses = (selectedCategory
@@ -288,7 +321,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* table */}
+            {/* expenses table */}
             {!loading && expenses.length > 0 && (
                 <div className={styles.tableCard}>
                     <div className={styles.tableHeader}>
@@ -358,15 +391,33 @@ export default function Dashboard() {
                                 </td>
                                 <td className={styles.tdDesc}>{exp.description || "—"}</td>
                                 <td className={styles.tdCategory}>
+                                    {editingExpenseId === exp.id ? (
+                                        <select
+                                            className={styles.categorySelect}
+                                            defaultValue={categories.find(c => c.name === exp.category)?.id ?? ""}
+                                            disabled={savingExpenseId === exp.id}
+                                            autoFocus
+                                            onChange={e => handleCategoryChange(exp.id, Number(e.target.value))}
+                                            onBlur={() => setEditingExpenseId(null)}
+                                        >
+                                            {categories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
                                         <span
                                             className={styles.categoryBadge}
                                             style={{
                                                 background: `${exp.categoryColor}22`,
-                                                color: exp.categoryColor || "var(--color-accent)"
+                                                color: exp.categoryColor || "var(--color-accent)",
+                                                cursor: "pointer",
                                             }}
+                                            onClick={() => setEditingExpenseId(exp.id)}
+                                            title="Clic para editar"
                                         >
-                                            {exp.category}
-                                        </span>
+                                                {exp.category}
+                                            </span>
+                                    )}
                                 </td>
                                 <td className={styles.tdAmount}>{fmt(exp.amount, exp.currency)}</td>
                             </tr>
@@ -391,7 +442,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            {/* empty */}
+            {/* empty state */}
             {!loading && !error && expenses.length === 0 && (
                 <div className={styles.emptyState}>
                     <p className={styles.emptyTitle}>No hay gastos para este mes.</p>

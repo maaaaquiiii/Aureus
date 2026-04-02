@@ -10,7 +10,9 @@ import com.aureus.ledger.domain.User;
 import com.aureus.ledger.domain.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +34,10 @@ public class ImportService {
     public ImportResponse importCsv(ImportRequest request, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        // Reject the upload if this exact file name was already successfully imported
         checkDuplicate(userId, request.fileName());
+
         // Create the import job with a PROCESSING status
         ImportJob job = new ImportJob();
         job.setUser(user);
@@ -42,28 +47,35 @@ public class ImportService {
         job = importJobRepository.save(job);
 
         try {
-            // Parse the CSV content
-            List<Expense> expenses = revolutCsvParser.parse(request.csvContent(), user);
-            job.setTotalRows(expenses.size());
-            // Link each expense to the import job and save it to the database
-            for (Expense expense : expenses) {
+            // Parse the CSV content into candidate expenses
+            List<Expense> parsed = revolutCsvParser.parse(request.csvContent(), user);
+
+            // Separate new expenses from duplicates using the external_id fingerprint
+            List<Expense> toSave = new ArrayList<>();
+            int skipped = 0;
+
+            for (Expense expense : parsed) {
+                String extId = expense.getExternalId();
+                if (extId != null && expenseRepository.existsByUserIdAndExternalId(userId, extId)) {
+                    // This transaction already exists — skip it silently
+                    skipped++;
+                    continue;
+                }
                 expense.setImportJob(job);
-                expenseRepository.save(expense);
+                toSave.add(expense);
             }
+
+            expenseRepository.saveAll(toSave);
+
             // Update the job status to DONE and record completion details
             job.setStatus("DONE");
-            job.setImportedRows(expenses.size());
+            job.setTotalRows(parsed.size());
+            job.setImportedRows(toSave.size());
+            job.setSkippedRows(skipped);
             job.setFinishedAt(LocalDateTime.now());
             importJobRepository.save(job);
-            return new ImportResponse(
-                    job.getId(),
-                    job.getStatus(),
-                    job.getTotalRows(),
-                    job.getImportedRows(),
-                    null,
-                    job.getFileName(),
-                    job.getCreatedAt()
-            );
+
+            return toResponse(job);
 
         } catch (Exception e) {
             // If anything fails, mark the job as FAILED and record the error
@@ -71,9 +83,11 @@ public class ImportService {
             job.setErrorDetail(e.getMessage());
             job.setFinishedAt(LocalDateTime.now());
             importJobRepository.save(job);
+
             return new ImportResponse(
                     job.getId(),
                     job.getStatus(),
+                    0,
                     0,
                     0,
                     e.getMessage(),
@@ -108,15 +122,7 @@ public class ImportService {
     public List<ImportResponse> getImportJobs(Long userId) {
         return importJobRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
-                .map(job -> new ImportResponse(
-                        job.getId(),
-                        job.getStatus(),
-                        job.getTotalRows(),
-                        job.getImportedRows(),
-                        job.getErrorDetail(),
-                        job.getFileName(),
-                        job.getCreatedAt()
-                ))
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -127,5 +133,19 @@ public class ImportService {
             expenseRepository.deleteByImportJobId(job.getId());
         }
         importJobRepository.deleteAll(jobs);
+    }
+
+    // Maps an ImportJob entity to its API response record
+    private ImportResponse toResponse(ImportJob job) {
+        return new ImportResponse(
+                job.getId(),
+                job.getStatus(),
+                job.getTotalRows()    != null ? job.getTotalRows()    : 0,
+                job.getImportedRows() != null ? job.getImportedRows() : 0,
+                job.getSkippedRows()  != null ? job.getSkippedRows()  : 0,
+                job.getErrorDetail(),
+                job.getFileName(),
+                job.getCreatedAt()
+        );
     }
 }
