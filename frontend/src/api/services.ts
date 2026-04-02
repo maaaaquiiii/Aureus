@@ -1,5 +1,5 @@
 import client from "./client";
-import type {Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse} from "./types";
+import type { Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse, LlmAnalysis } from "./types";
 
 const getUserId = (): number => {
     const stored = localStorage.getItem("auth") || sessionStorage.getItem("auth");
@@ -120,4 +120,23 @@ export const updateExpenseCategory = async (
     categoryId: number
 ): Promise<void> => {
     await client.patch(`/expenses/${expenseId}/category`, { categoryId });
+};
+
+// LLM Analysis
+export const analyseMonth = async (period: string): Promise<LlmAnalysis> => {
+    const { data } = await client.post("/llm/analyse", { period });
+    return data;
+};
+
+export const getCachedAnalysis = async (period: string): Promise<LlmAnalysis | null> => {
+    try {
+        const { data } = await client.get("/llm/analyse", { params: { period } });
+        return data;
+    } catch {
+        return null;
+    }
+};
+
+export const deleteAnalysis = async (period: string): Promise<void> => {
+    await client.delete("/llm/analyse", { params: { period } });
 };

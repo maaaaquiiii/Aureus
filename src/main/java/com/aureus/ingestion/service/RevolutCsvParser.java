@@ -130,19 +130,19 @@ public class RevolutCsvParser {
     private String mapRevolutType(String revolutType) {
         return switch (revolutType.toUpperCase()) {
             // English
-            case "CARD_PAYMENT"         -> "Eating Out";
-            case "TRANSFER"             -> "Other";
-            case "TOPUP"                -> "Other";
-            case "ATM"                  -> "Other";
-            case "SUBSCRIPTION"         -> "Subscriptions";
-            case "TRAVEL"               -> "Travel";
+            case "CARD_PAYMENT" -> "Eating Out";
+            case "TRANSFER" -> "Other";
+            case "TOPUP" -> "Other";
+            case "ATM" -> "Other";
+            case "SUBSCRIPTION" -> "Subscriptions";
+            case "TRAVEL" -> "Travel";
             // Spanish
-            case "PAGO CON TARJETA"     -> "Eating Out";
-            case "TRANSFERIR"           -> "Other";
-            case "RECARGAS"             -> "Other";
+            case "PAGO CON TARJETA" -> "Eating Out";
+            case "TRANSFERIR" -> "Other";
+            case "RECARGAS" -> "Other";
             case "REEMBOLSO DE TARJETA" -> "Other";
-            case "CAJERO AUTOMÁTICO"    -> "Other";
-            default                     -> "Other";
+            case "CAJERO AUTOMÁTICO" -> "Other";
+            default -> "Other";
         };
     }
 

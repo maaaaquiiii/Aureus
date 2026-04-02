@@ -74,3 +74,13 @@ export interface ImportResponse {
     fileName: string;
     createdAt: string;
 }
+
+export interface LlmAnalysis {
+    id: number;
+    period: string;
+    analysis: string;
+    modelUsed: string;
+    tokensUsed: number;
+    createdAt: string;
+    cached: boolean;
+}

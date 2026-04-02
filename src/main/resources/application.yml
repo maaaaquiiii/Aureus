@@ -18,3 +18,7 @@ security:
   jwt:
     secret: h/YBgt/QlM57SVbqiLFb2CRATkMjUnoNyDNvudfr24s=
     expiration: 86400000
+
+openai:
+  api-key: ${OPENAI_API_KEY:placeholder}
+  model: gpt-4.1-mini
