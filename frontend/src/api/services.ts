@@ -1,10 +1,23 @@
 import client from "./client";
-import type { Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse, LlmAnalysis } from "./types";
+import type { Expense, MonthlySummary, MonthlyEvolution, Budget, ImportResponse, Category, AuthResponse, LlmAnalysis, UserStats, UserResponse } from "./types";
 
 const getUserId = (): number => {
     const stored = localStorage.getItem("auth") || sessionStorage.getItem("auth");
     if (!stored) throw new Error("No autenticado");
     return JSON.parse(stored).userId;
+};
+
+export const getUserStats = async (): Promise<UserStats> => {
+    const { data } = await client.get(`/users/${getUserId()}/stats`);
+    return data;
+};
+
+export const updateUser = async (payload: {
+    password?: string;
+    currency?: string;
+}): Promise<UserResponse> => {
+    const { data } = await client.put(`/users/${getUserId()}`, payload);
+    return data;
 };
 
 // Login

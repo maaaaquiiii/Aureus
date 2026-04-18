@@ -7,4 +7,6 @@ import java.util.List;
 @Repository
 public interface ImportJobRepository extends JpaRepository<ImportJob, Long> {
     List<ImportJob> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    long countByUserId(Long userId);
 }

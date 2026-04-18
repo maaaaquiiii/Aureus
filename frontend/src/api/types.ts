@@ -5,6 +5,20 @@ export interface User {
     currency: string;
 }
 
+export interface UserResponse {
+    id: number;
+    email: string;
+    name: string;
+    currency: string;
+}
+
+export interface UserStats {
+    totalExpenses: number;
+    totalImports: number;
+    totalSpent: number;
+    memberSince: string;
+}
+
 export interface AuthResponse {
     token: string;
     userId: number;

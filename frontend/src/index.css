@@ -17,19 +17,14 @@
 
     --color-text:           #F2F6FA;
     --color-text-secondary: #cfe0ef;
-    --color-text-muted: #b5d2ee;
-    --color-section-title: #92b5d7;
-
-    /* el dorado solo para el logo */
+    --color-text-muted:     #b5d2ee;
+    --color-section-title:  #7BAFD4;
     --color-logo:           #C9A96E;
-
-    /* acento neutro para cifras, hover y gráficas */
     --color-accent:         #EEF2F7;
     --color-accent-soft:    #EEF2F710;
 
     --color-danger:         #E07878;
     --color-danger-bg:      #1E1018;
-    --color-section-title:  #526478;
     --color-success:        #6AB898;
     --color-success-bg:     #0E1E18;
 
@@ -42,7 +37,7 @@
     --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-/* ── modo claro ──────────────────────────────────────────── */
+/* modo claro */
 :root.light {
     --color-bg:             #F8F7F4;
     --color-surface:        #FFFFFF;
@@ -51,8 +46,8 @@
     --color-border-soft:    #EDE8DF;
 
     --color-text:           #1A1612;
-    --color-text-secondary: #6B5C4E;
-    --color-text-muted:     #A89080;
+    --color-text-secondary: #4A3B2E;
+    --color-text-muted:     #7A6555;
 
     --color-logo:           #A48D78;
     --color-accent:         #1A1612;
@@ -60,7 +55,7 @@
 
     --color-danger:         #B05050;
     --color-danger-bg:      #FDF4F0;
-    --color-section-title:  #A89080;
+    --color-section-title:  #6B4F3A;
     --color-success:        #5A8A6A;
     --color-success-bg:     #F0F7F2;
 

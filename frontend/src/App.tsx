@@ -7,6 +7,7 @@ import Analysis from "./pages/Analysis";
 import Budgets from "./pages/Budgets";
 import Auth from "./pages/Auth";
 import Layout from "./components/Layout";
+import Profile from "./pages/Profile.tsx";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
     const { token } = useAuth();
@@ -32,6 +33,7 @@ function App() {
                         <Route path="import" element={<ImportCsv />} />
                         <Route path="analysis" element={<Analysis />} />
                         <Route path="budgets" element={<Budgets />} />
+                        <Route path="profile" element={<Profile />} />
                     </Route>
                 </Routes>
             </BrowserRouter>

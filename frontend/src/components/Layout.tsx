@@ -61,7 +61,14 @@ export default function Layout() {
                         >
                             {isLight ? "○" : "●"}
                         </button>
-                        <span className={styles.userName}>{user?.name}</span>
+                        <NavLink
+                            to="/profile"
+                            className={({ isActive }) =>
+                                `${styles.userName} ${isActive ? styles.userNameActive : ""}`
+                            }
+                        >
+                            {user?.name}
+                        </NavLink>
                         <button
                             className={styles.logoutBtn}
                             onClick={handleLogout}
