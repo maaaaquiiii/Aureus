@@ -28,10 +28,11 @@ public class BudgetController {
                 .body(budgetService.createBudget(request, userId));
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping
     public List<BudgetResponse> findByUserAndPeriod(
-            @PathVariable Long userId,
-            @RequestParam String period) {
+            @RequestParam String period,
+            @RequestHeader("Authorization") String authHeader) {
+        Long userId = jwtService.extractUserId(authHeader.substring(7));
         return budgetService.findByUserAndPeriod(userId, period);
     }
 

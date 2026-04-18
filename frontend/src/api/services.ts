@@ -47,24 +47,18 @@ export const getMonthlyExpenses = async (month: string): Promise<Expense[]> => {
 
 // Analytics
 export const getMonthlySummary = async (month: string): Promise<MonthlySummary> => {
-    const { data } = await client.get(`/analytics/users/${getUserId()}/monthly`, {
-        params: { month },
-    });
+    const { data } = await client.get(`/analytics/monthly`, { params: { month } });
     return data;
 };
 
 export const getEvolution = async (months: number = 6): Promise<MonthlyEvolution[]> => {
-    const { data } = await client.get(`/analytics/users/${getUserId()}/evolution`, {
-        params: { months },
-    });
+    const { data } = await client.get(`/analytics/evolution`, { params: { months } });
     return data;
 };
 
 // Budgets
 export const getBudgets = async (period: string): Promise<Budget[]> => {
-    const { data } = await client.get(`/budgets/users/${getUserId()}`, {
-        params: { period },
-    });
+    const { data } = await client.get(`/budgets`, { params: { period } });
     return data;
 };
 
@@ -73,10 +67,7 @@ export const createBudget = async (budget: {
     period: string;
     limitAmount: number;
 }): Promise<Budget> => {
-    const { data } = await client.post("/budgets", {
-        userId: getUserId(),
-        ...budget,
-    });
+    const { data } = await client.post("/budgets", budget);
     return data;
 };
 
@@ -84,10 +75,7 @@ export const updateBudget = async (
     budgetId: number,
     budget: { categoryId: number; period: string; limitAmount: number }
 ): Promise<Budget> => {
-    const { data } = await client.put(`/budgets/${budgetId}`, {
-        userId: getUserId(),
-        ...budget,
-    });
+    const { data } = await client.put(`/budgets/${budgetId}`, budget);
     return data;
 };
 
@@ -101,7 +89,6 @@ export const importCsv = async (
     fileName: string
 ): Promise<ImportResponse> => {
     const { data } = await client.post("/imports", {
-        userId: getUserId(),
         source: "revolut",
         csvContent,
         fileName,
