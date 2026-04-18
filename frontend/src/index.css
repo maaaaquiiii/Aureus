@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poiret+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 /* modo oscuro (por defecto) */
 :root {
