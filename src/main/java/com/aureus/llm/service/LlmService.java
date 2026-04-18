@@ -24,17 +24,15 @@ public class LlmService {
     private final AnalyticsService analyticsService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final String apiKey;
+    private final String model;
 
-    @Value("${openai.api-key}")
-    private String apiKey;
-
-    @Value("${openai.model}")
-    private String model;
-
-    public LlmService(LlmAnalysisRepository llmAnalysisRepository, AnalyticsService analyticsService, UserRepository userRepository) {
+    public LlmService(LlmAnalysisRepository llmAnalysisRepository, AnalyticsService analyticsService, UserRepository userRepository, @Value("${openai.api-key}") String apiKey, @Value("${openai.model}") String model) {
         this.llmAnalysisRepository = llmAnalysisRepository;
         this.analyticsService = analyticsService;
         this.userRepository = userRepository;
+        this.apiKey = apiKey;
+        this.model = model;
     }
 
     @Transactional
@@ -48,8 +46,9 @@ public class LlmService {
         // Build the prompt from the user's real monthly data
         YearMonth yearMonth = YearMonth.parse(period);
         var summary = analyticsService.calculateMonthlySummary(userId, yearMonth);
-        String prompt = buildPrompt(period, summary.totalSpent().doubleValue(), summary.totalBudget().doubleValue(),
-                summary.transactionCount(), summary.categories());
+        String prompt = buildPrompt(period, summary.totalSpent().doubleValue(),
+                summary.totalBudget().doubleValue(), summary.transactionCount(),
+                summary.categories());
         // Call the OpenAI API
         String analysisText;
         int tokensUsed;
@@ -63,7 +62,6 @@ public class LlmService {
         // Persist the result so we don't call the API again for the same period
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-
         LlmAnalysis analysis = new LlmAnalysis();
         analysis.setUser(user);
         analysis.setPeriod(period);
@@ -72,7 +70,6 @@ public class LlmService {
         analysis.setModelUsed(model);
         analysis.setTokensUsed(tokensUsed);
         llmAnalysisRepository.save(analysis);
-
         return toResponse(analysis, false);
     }
 
@@ -111,7 +108,6 @@ public class LlmService {
     }
 
     private String[] callOpenAi(String prompt) throws Exception {
-        // Build the request body as JSON
         String requestBody = objectMapper.writeValueAsString(
                 new java.util.HashMap<>() {{
                     put("model", model);
@@ -124,22 +120,23 @@ public class LlmService {
                     ));
                 }}
         );
-
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openai.com/v1/chat/completions"))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new RuntimeException("OpenAI returned status " + response.statusCode() + ": " + response.body());
+        // Call the OpenAI API and parse the response
+        try (HttpClient httpClient = HttpClient.newHttpClient()) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new RuntimeException("OpenAI returned status " + response.statusCode() + ": " + response.body());
+            }
+            JsonNode root = objectMapper.readTree(response.body());
+            String content = root.path("choices").get(0).path("message").path("content").asText();
+            int tokens = root.path("usage").path("total_tokens").asInt();
+            return new String[]{ content, String.valueOf(tokens) };
         }
-        JsonNode root = objectMapper.readTree(response.body());
-        String content = root.path("choices").get(0).path("message").path("content").asText();
-        int tokens = root.path("usage").path("total_tokens").asInt();
-        return new String[]{ content, String.valueOf(tokens) };
     }
 
     @Transactional(readOnly = true)
