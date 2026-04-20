@@ -23,17 +23,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        System.out.println(">>> Authorization header: " + authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         final String token = authHeader.substring(7);
-        System.out.println(">>> Token extraído: " + token);
-        System.out.println(">>> isTokenValid: " + jwtService.isTokenValid(token));
         if (jwtService.isTokenValid(token)) {
             String email = jwtService.extractEmail(token);
-            System.out.println(">>> Email extraído: " + email);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null, List.of());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);

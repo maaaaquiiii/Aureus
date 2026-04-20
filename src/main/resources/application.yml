@@ -10,13 +10,17 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  security:
+    user:
+      name: disabled
+      password: disabled
 
 server:
   port: 8080
 
 security:
   jwt:
-    secret: h/YBgt/QlM57SVbqiLFb2CRATkMjUnoNyDNvudfr24s=
+    secret: ${JWT_SECRET:h/YBgt/QlM57SVbqiLFb2CRATkMjUnoNyDNvudfr24s=}
     expiration: 86400000
 
 openai:
