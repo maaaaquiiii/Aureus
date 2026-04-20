@@ -22,25 +22,19 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseResponse> createExpense(
-            @Valid @RequestBody ExpenseRequest request,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<ExpenseResponse> createExpense(@Valid @RequestBody ExpenseRequest request, @RequestHeader("Authorization") String authHeader) {
         Long userId = jwtService.extractUserId(authHeader.substring(7));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(expenseService.createExpense(request, userId));
     }
 
     @GetMapping("/users/{userId}/monthly")
-    public List<ExpenseResponse> getMonthlyExpenses(
-            @PathVariable Long userId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
+    public List<ExpenseResponse> getMonthlyExpenses(@PathVariable Long userId, @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth month) {
         return expenseService.findMonthlyExpenses(userId, month);
     }
 
     @PatchMapping("/{expenseId}/category")
-    public ResponseEntity<Void> updateCategory(
-            @PathVariable Long expenseId,
-            @RequestBody UpdateExpenseCategoryRequest request) {
+    public ResponseEntity<Void> updateCategory(@PathVariable Long expenseId, @RequestBody UpdateExpenseCategoryRequest request) {
         expenseService.updateCategory(expenseId, request.categoryId());
         return ResponseEntity.noContent().build();
     }

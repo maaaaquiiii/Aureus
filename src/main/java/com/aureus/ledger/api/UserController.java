@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-
     private final UserService userService;
     private final JwtService jwtService;
 
@@ -36,10 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody UserUpdateRequest request,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request, @RequestHeader("Authorization") String authHeader) {
         Long tokenUserId = jwtService.extractUserId(authHeader.substring(7));
         if (!tokenUserId.equals(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -48,9 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/stats")
-    public ResponseEntity<UserStatsResponse> getStats(
-            @PathVariable Long id,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<UserStatsResponse> getStats(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
         Long tokenUserId = jwtService.extractUserId(authHeader.substring(7));
         if (!tokenUserId.equals(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

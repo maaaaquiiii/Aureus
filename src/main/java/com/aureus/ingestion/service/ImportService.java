@@ -10,7 +10,6 @@ import com.aureus.ledger.domain.User;
 import com.aureus.ledger.domain.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +33,8 @@ public class ImportService {
     public ImportResponse importCsv(ImportRequest request, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-
         // Reject the upload if this exact file name was already successfully imported
         checkDuplicate(userId, request.fileName());
-
         // Create the import job with a PROCESSING status
         ImportJob job = new ImportJob();
         job.setUser(user);
@@ -45,15 +42,12 @@ public class ImportService {
         job.setFileName(request.fileName());
         job.setStatus("PROCESSING");
         job = importJobRepository.save(job);
-
         try {
             // Parse the CSV content into candidate expenses
             List<Expense> parsed = revolutCsvParser.parse(request.csvContent(), user);
-
             // Separate new expenses from duplicates using the external_id fingerprint
             List<Expense> toSave = new ArrayList<>();
             int skipped = 0;
-
             for (Expense expense : parsed) {
                 String extId = expense.getExternalId();
                 if (extId != null && expenseRepository.existsByUserIdAndExternalId(userId, extId)) {
@@ -64,9 +58,7 @@ public class ImportService {
                 expense.setImportJob(job);
                 toSave.add(expense);
             }
-
             expenseRepository.saveAll(toSave);
-
             // Update the job status to DONE and record completion details
             job.setStatus("DONE");
             job.setTotalRows(parsed.size());
@@ -74,16 +66,13 @@ public class ImportService {
             job.setSkippedRows(skipped);
             job.setFinishedAt(LocalDateTime.now());
             importJobRepository.save(job);
-
             return toResponse(job);
-
         } catch (Exception e) {
             // If anything fails, mark the job as FAILED and record the error
             job.setStatus("FAILED");
             job.setErrorDetail(e.getMessage());
             job.setFinishedAt(LocalDateTime.now());
             importJobRepository.save(job);
-
             return new ImportResponse(
                     job.getId(),
                     job.getStatus(),
@@ -102,9 +91,10 @@ public class ImportService {
                 .stream()
                 .filter(job -> "DONE".equals(job.getStatus()))
                 .filter(job -> fileName.equals(job.getFileName()))
+                .filter(job -> expenseRepository.existsByImportJobId(job.getId()))
                 .findFirst()
                 .ifPresent(job -> {
-                    throw new RuntimeException(
+                    throw new IllegalStateException(
                             "El archivo '" + fileName + "' ya fue importado el " + job.getCreatedAt().toLocalDate()
                     );
                 });
@@ -140,9 +130,9 @@ public class ImportService {
         return new ImportResponse(
                 job.getId(),
                 job.getStatus(),
-                job.getTotalRows()    != null ? job.getTotalRows()    : 0,
+                job.getTotalRows() != null ? job.getTotalRows()    : 0,
                 job.getImportedRows() != null ? job.getImportedRows() : 0,
-                job.getSkippedRows()  != null ? job.getSkippedRows()  : 0,
+                job.getSkippedRows() != null ? job.getSkippedRows()  : 0,
                 job.getErrorDetail(),
                 job.getFileName(),
                 job.getCreatedAt()

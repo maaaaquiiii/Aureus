@@ -25,7 +25,6 @@ public class BudgetService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found: " + request.categoryId()));
-
         // Check if a budget already exists for this user, category, and period (month)
         budgetRepository.findByUserIdAndCategoryIdAndPeriod(userId, request.categoryId(),
                 request.period()).ifPresent(b -> {
@@ -52,14 +51,11 @@ public class BudgetService {
     public BudgetResponse updateBudget(Long budgetId, BudgetRequest request) {
         Budget budget = budgetRepository.findById(budgetId)
                 .orElseThrow(() -> new RuntimeException("Budget not found: " + budgetId));
-
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found: " + request.categoryId()));
-
         budget.setCategory(category);
         budget.setPeriod(request.period());
         budget.setLimitAmount(request.limitAmount());
-
         return toResponse(budgetRepository.save(budget));
     }
 

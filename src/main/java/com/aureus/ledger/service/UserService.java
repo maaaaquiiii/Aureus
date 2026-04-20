@@ -76,14 +76,11 @@ public class UserService {
         long totalExpenses = expenseRepository.countByUserId(userId);
         long totalImports  = importJobRepository.countByUserId(userId);
         BigDecimal totalSpent = expenseRepository.sumAmountByUserId(userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-
         String memberSince = user.getCreatedAt()
                 .toLocalDate()
                 .format(DateTimeFormatter.ofPattern("MMMM yyyy", Locale.forLanguageTag("es")));
-
         return new UserStatsResponse(
                 totalExpenses,
                 totalImports,

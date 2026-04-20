@@ -10,17 +10,15 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    List<Expense> findByUserIdAndIncurredOnBetweenOrderByIncurredOnDesc(
-            Long userId, LocalDate start, LocalDate end);
+    List<Expense> findByUserIdAndIncurredOnBetweenOrderByIncurredOnDesc(Long userId, LocalDate start, LocalDate end);
     List<Expense> findByImportJobId(Long importJobId);
     long countByUserId(Long userId);
 
-    @Query("SELECT e FROM Expense e WHERE e.user.id = :userId " +
-            "AND e.incurredOn >= :start AND e.incurredOn <= :end")
+    @Query("SELECT e FROM Expense e WHERE e.user.id = :userId AND e.incurredOn >= :start AND e.incurredOn <= :end")
     List<Expense> findByUserIdAndIncurredOnBetween(@Param("userId") Long userId, @Param("start") LocalDate start, @Param("end") LocalDate end);
 
     void deleteByImportJobId(Long importJobId);
-
+    boolean existsByImportJobId(Long importJobId);
     // Used by ImportService to skip transactions that have already been imported
     boolean existsByUserIdAndExternalId(Long userId, String externalId);
 

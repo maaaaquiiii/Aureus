@@ -40,7 +40,6 @@ public class RevolutCsvParser {
 
     public List<Expense> parse(String csvContent, User user) {
         List<Expense> expenses = new ArrayList<>();
-
         try (BufferedReader reader = new BufferedReader(new StringReader(csvContent))) {
             String header = reader.readLine(); // Skip the header row
             if (header == null) return expenses;
@@ -117,7 +116,6 @@ public class RevolutCsvParser {
                     .orElseGet(() -> categoryRepository.findByNameIgnoreCase("Other").orElseThrow());
             expense.setCategory(category);
         }
-
         return expense;
     }
 
@@ -230,11 +228,6 @@ public class RevolutCsvParser {
         return NEEDS_AI;
     }
 
-    /**
-     * Builds a SHA-256 fingerprint from the fields that uniquely identify a transaction.
-     * The started date (precise to the second) combined with description, amount and currency
-     * is unique enough to safely deduplicate across overlapping Revolut CSV exports.
-     */
     private String buildExternalId(String startedDate, String description, String amount, String currency) {
         String raw = startedDate + "|" + description + "|" + amount + "|" + currency;
         try {
@@ -242,7 +235,6 @@ public class RevolutCsvParser {
             byte[] hash = digest.digest(raw.getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hash); // 64-character hex string
         } catch (NoSuchAlgorithmException e) {
-            // SHA-256 is guaranteed to be available in any standard JVM — this branch is unreachable
             return raw;
         }
     }

@@ -20,18 +20,14 @@ public class BudgetController {
     }
 
     @PostMapping
-    public ResponseEntity<BudgetResponse> createBudget(
-            @Valid @RequestBody BudgetRequest request,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<BudgetResponse> createBudget(@Valid @RequestBody BudgetRequest request, @RequestHeader("Authorization") String authHeader) {
         Long userId = jwtService.extractUserId(authHeader.substring(7));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(budgetService.createBudget(request, userId));
     }
 
     @GetMapping
-    public List<BudgetResponse> findByUserAndPeriod(
-            @RequestParam String period,
-            @RequestHeader("Authorization") String authHeader) {
+    public List<BudgetResponse> findByUserAndPeriod(@RequestParam String period, @RequestHeader("Authorization") String authHeader) {
         Long userId = jwtService.extractUserId(authHeader.substring(7));
         return budgetService.findByUserAndPeriod(userId, period);
     }
