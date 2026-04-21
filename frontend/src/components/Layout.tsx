@@ -5,9 +5,9 @@ import styles from "./Layout.module.css";
 
 const navItems = [
     { to: "/dashboard", label: "Dashboard" },
+    { to: "/budgets", label: "Presupuestos" },
     { to: "/import", label: "Importar CSV" },
     { to: "/analysis", label: "Análisis" },
-    { to: "/budgets", label: "Presupuestos" },
 ];
 
 export default function Layout() {
