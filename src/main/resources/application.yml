@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/aureus}
-    username: ${DB_USERNAME:aureus}
-    password: ${DB_PASSWORD:aureus}
+    url: jdbc:postgresql://localhost:5432/aureus
+    username: aureus
+    password: aureus
   jpa:
     open-in-view: false
     hibernate:
